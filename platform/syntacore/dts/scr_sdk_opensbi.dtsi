@@ -1,0 +1,89 @@
+/*
+ *  Copyright (C) 2022 Syntacore
+ */
+
+#include "../include/dt-bindings/scr_mpu.h"
+
+/ {
+	chosen {
+		opensbi-domains {
+			compatible = "opensbi,domain,config";
+
+			mcfg_reg: mcfg_reg {
+				compatible = "opensbi,domain,memregion";
+				base = <0xffffff 0xf0040000>;
+				order = <13>;
+			};
+
+			mmio_reg: mmio_reg {
+				compatible = "opensbi,domain,memregion";
+				base = <0xffffff 0xff000000>;
+				order = <23>;
+			};
+
+			plic_reg: plic_reg {
+				compatible = "opensbi,domain,memregion";
+				base = <0xffffff 0xfe000000>;
+				order = <24>;
+			};
+
+			dma_mem: dma_mem {
+				compatible = "opensbi,domain,memregion";
+				base = <0x0 0xff000000>;
+				order = <24>;
+			};
+
+			pci_io: pci_io {
+				compatible = "opensbi,domain,memregion";
+				base = <0xffffff 0xa0000000>;
+				order = <29>;
+			};
+
+			pci_cfg: pci_cfg {
+				compatible = "opensbi,domain,memregion";
+				base = <0xffffff 0xc0000000>;
+				order = <29>;
+			};
+
+			allmem: allmem {
+				compatible = "opensbi,domain,memregion";
+				base = <0x0 0x0>;
+				order = <32>;
+			};
+
+			tdomain: trusted-domain {
+				compatible = "opensbi,domain,instance";
+				possible-harts = <&cpu0 &cpu1 &cpu2 &cpu3>;
+				regions =
+					<&allmem (SCR_MPU_DEFINED_FLAGS | SCR_MPU_MODE_ALL)>,
+					<&pci_io (SCR_MPU_NOCACHE_STRONG_ORDER | SCR_MPU_DEFINED_FLAGS | SCR_MPU_MMODE_READ | SCR_MPU_MMODE_WRITE | SCR_MPU_SMODE_READ | SCR_MPU_SMODE_WRITE)>,
+					<&pci_cfg (SCR_MPU_NOCACHE_STRONG_ORDER | SCR_MPU_DEFINED_FLAGS | SCR_MPU_MMODE_READ | SCR_MPU_MMODE_WRITE | SCR_MPU_SMODE_READ | SCR_MPU_SMODE_WRITE)>,
+					<&dma_mem (SCR_MPU_NOCACHE_STRONG_ORDER | SCR_MPU_DEFINED_FLAGS | SCR_MPU_MMODE_READ | SCR_MPU_MMODE_WRITE | SCR_MPU_SMODE_READ | SCR_MPU_SMODE_WRITE)>,
+					<&mcfg_reg (SCR_MPU_MMIO | SCR_MPU_DEFINED_FLAGS | SCR_MPU_MMODE_READ | SCR_MPU_MMODE_WRITE)>,
+					<&mmio_reg (SCR_MPU_NOCACHE_STRONG_ORDER | SCR_MPU_DEFINED_FLAGS | SCR_MPU_MMODE_READ | SCR_MPU_MMODE_WRITE | SCR_MPU_SMODE_READ | SCR_MPU_SMODE_WRITE)>,
+					<&plic_reg (SCR_MPU_NOCACHE_STRONG_ORDER | SCR_MPU_DEFINED_FLAGS | SCR_MPU_MMODE_READ | SCR_MPU_MMODE_WRITE | SCR_MPU_SMODE_READ | SCR_MPU_SMODE_WRITE)>;
+				boot-hart = <&cpu0>;
+				system-reset-allowed;
+			};
+		};
+	};
+
+	cpus {
+		/* early mpu init by opensbi */
+		scr-mpu-early-init =
+			<&mcfg_reg (SCR_MPU_MMIO | SCR_MPU_DEFINED_FLAGS | SCR_MPU_MMODE_RW)>;
+
+		cpu0: cpu@0 {
+			opensbi-domain = <&tdomain>;
+		};
+		cpu1: cpu@1 {
+			opensbi-domain = <&tdomain>;
+		};
+		cpu2: cpu@2 {
+			opensbi-domain = <&tdomain>;
+		};
+		cpu3: cpu@3 {
+			opensbi-domain = <&tdomain>;
+		};
+	};
+};

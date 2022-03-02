@@ -1,0 +1,111 @@
+/*
+ *  Copyright (C) 2016-2022 Syntacore
+ */
+
+/ {
+	#address-cells = <2>;
+	#size-cells = <2>;
+
+	memory@0 {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		device_type = "memory";
+		reg = <0x0 0x0 0x0 0xff000000>;
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		dtb_dma_mem_name: scr-dma@ff000000 {
+			compatible = "scr-sdk-dma-pool";
+			reg = <0 0xff000000 0 0x1000000>;
+		};
+	};
+
+	clk_bus_0: clkc {
+		#clock-cells = <0>;
+		clock-frequency = <65000000>;
+		clock-output-names = "clk_bus_0";
+		compatible = "fixed-clock";
+	};
+
+	scr_sdk_soc: soc {
+		device_type = "soc";
+		ranges;
+		#address-cells = <2>;
+		#size-cells = <2>;
+		compatible = "simple-bus";
+		bus-frequency = <65000000>;
+	};
+};
+
+&scr_sdk_soc {
+	#address-cells = <2>;
+	#size-cells = <2>;
+
+	pb_cpu_to_io: bridge@ffffffff000000 {
+		compatible = "simple-bus";
+		reg = <0xffffff 0xff000000 0x0 0x00800000>;
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges = <0x0 0x0 0xffffff 0xff000000 0x0 0x00800000>;
+
+		uart: serial@10000 {
+			compatible = "ns16550a";
+			reg = <0x0 0x10000 0x0 0x00000100>;
+			reg-io-width = <4>;
+			reg-shift = <2>;
+			interrupt-parent = <&plic>;
+			interrupts = <1>;
+			current-speed = <115200>;
+			clocks = <&sysclk>;
+		};
+
+		axi_ethernet_0: ethernet@40000 {
+			axistream-connected = <&axi_ethernet_0_dma>;
+			axistream-control-connected = <&axi_ethernet_0_dma>;
+
+			compatible = "xlnx,axi-ethernet-1.00.a";
+			device_type = "network";
+			local-mac-address = [00 0a 35 04 D0 91];
+
+			reg = <0 0x40000 0 0x40000>;
+
+			phy-handle = <&phy3>;
+			phy-mode = "sgmii";
+
+			xlnx,rxcsum = <0x2>;
+			xlnx,rxmem = <0x1000>;
+			xlnx,txcsum = <0x2>;
+
+			managed = "in-band-status";
+
+			mdio {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				phy3: phy@3 {
+					compatible = "ethernet-phy-ieee802.3-c22";
+					reg = <3>;
+					ti,fifo-depth = <0x3>;
+					ti,dp83867-rxctrl-strap-quirk = <1>;
+					ti,sgmii-ref-clock-output-enable = <1>;
+				};
+			};
+		};
+
+		axi_ethernet_0_dma: dma@80000 {
+			#dma-cells = <1>;
+			axistream-connected = <&axi_ethernet_0>;
+			axistream-control-connected = <&axi_ethernet_0>;
+			clock-frequency = <dev3_freq:0>;
+			clock-names = "s_axi_lite_aclk";
+			clocks = <&clk_bus_0>;
+			compatible = "xlnx,eth-dma";
+			interrupt-parent = <&plic>;
+			interrupts = <3>,<2>;
+			reg = <0 0x80000 0 0x10000>;
+			xlnx,include-dre ;
+		};
+	};
+};

@@ -62,6 +62,9 @@ struct sbi_pmu_device {
 	 */
 	int (*fw_counter_stop)(uint32_t counter_index);
 
+	/** Custom update inhibit flags for hardware counter */
+	void (*hw_update_inhibit_flags)(unsigned long flags, uint64_t *mhpmevent_val);
+
 	/**
 	 * Custom enable irq for hardware counter
 	 * Note: 0 <= counter_index < SBI_PMU_HW_CTR_MAX

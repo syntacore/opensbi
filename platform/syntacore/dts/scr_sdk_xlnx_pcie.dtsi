@@ -1,0 +1,39 @@
+/*
+ *  Copyright (C) 2016-2022 Syntacore
+ */
+
+&scr_sdk_soc {
+	pci_express: pcie@ffffffc0000000 {
+		#address-cells = <3>;
+		#interrupt-cells = <1>;
+		#size-cells = <2>;
+		compatible = "xlnx,axi-pcie-host-1.00.a";
+		device_type = "pci";
+
+		interrupt-map = <0 0 0 0 &xil_pcie_intc 0>,
+				<0 0 0 1 &xil_pcie_intc 1>,
+				<0 0 0 2 &xil_pcie_intc 2>,
+				<0 0 0 3 &xil_pcie_intc 3>,
+				<0 0 0 4 &xil_pcie_intc 4>,
+				<0 0 0 5 &xil_pcie_intc 5>,
+				<0 0 0 6 &xil_pcie_intc 6>,
+				<0 0 0 7 &xil_pcie_intc 7>;
+		interrupt-map-mask = <0 0 0 7>;
+		interrupt-parent = <&plic>;
+		interrupts = <4>;
+
+		bus-range = <0 255>;
+
+		ranges = <0x02000000 0 0 0xffffffff 0xa0000000 0x0 0x20000000>;
+		dma-ranges = <0x43000000 0x0 0 0 0 0 0xff000000>;
+
+		reg = <0xffffff 0xc0000000 0x0 0x20000000>;
+		reg-names = "control";
+
+		xil_pcie_intc: interrupt-controller {
+			#address-cells = <0>;
+			#interrupt-cells = <1>;
+			interrupt-controller;
+		};
+	};
+};

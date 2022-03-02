@@ -11,6 +11,7 @@
 #define __SBI_HSM_H__
 
 #include <sbi/sbi_types.h>
+#include <sbi/riscv_atomic.h>
 
 /** Hart state managment device */
 struct sbi_hsm_device {
@@ -69,5 +70,7 @@ int sbi_hsm_hart_get_state(const struct sbi_domain *dom, u32 hartid);
 int sbi_hsm_hart_interruptible_mask(const struct sbi_domain *dom,
 				    ulong hbase, ulong *out_hmask);
 void sbi_hsm_prepare_next_jump(struct sbi_scratch *scratch, u32 hartid);
+
+atomic_t *sbi_hsm_get_state_ptr(u32 hartid);
 
 #endif

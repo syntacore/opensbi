@@ -1,0 +1,20 @@
+/*
+ *  Copyright (C) 2016-2022 Syntacore
+ */
+
+/dts-v1/;
+
+#include "scr_sdk_scr5.dtsi"
+#include "scr_sdk_vcu118.dtsi"
+#include "scr_sdk_riscv_plic.dtsi"
+#include "scr_sdk_pmu.dtsi"
+#include "scr_sdk_opensbi.dtsi"
+
+/ {
+	model = "Syntacore SCR5 SDK board";
+	compatible = "syntacore,scr_sdk";
+
+	chosen {
+		bootargs = "earlycon=sbi console=ttyS0,115200 root=/dev/nvme0n1p1 rootfstype=ext4 rw rootwait";
+	};
+};

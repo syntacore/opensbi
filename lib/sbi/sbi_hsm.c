@@ -50,6 +50,19 @@ static inline int __sbi_hsm_hart_get_state(u32 hartid)
 	return atomic_read(&hdata->state);
 }
 
+atomic_t *sbi_hsm_get_state_ptr(u32 hartid)
+{
+	struct sbi_hsm_data *hdata;
+	struct sbi_scratch *scratch;
+
+	scratch = sbi_hartid_to_scratch(hartid);
+	if (!scratch)
+		return NULL;
+
+	hdata = sbi_scratch_offset_ptr(scratch, hart_data_offset);
+	return &hdata->state;
+}
+
 int sbi_hsm_hart_get_state(const struct sbi_domain *dom, u32 hartid)
 {
 	if (!sbi_domain_is_assigned_hart(dom, hartid))

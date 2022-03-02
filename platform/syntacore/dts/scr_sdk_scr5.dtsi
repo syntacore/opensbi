@@ -1,0 +1,148 @@
+/*
+ *  Copyright (C) 2016-2022 Syntacore
+ */
+
+#if __riscv_xlen == 32
+# define RISCV_ISA	"rv32imafdc"
+# define MMU_TYPE	"riscv,sv32"
+#else
+# define RISCV_ISA	"rv64imafdc"
+# define MMU_TYPE	"riscv,sv39"
+#endif
+
+/ {
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		timebase-frequency = <1000000>;
+
+		cpu0: cpu@0 {
+			device_type = "cpu";
+			reg = <0>;
+			status = "okay";
+			compatible = "syntacore,scr7","riscv";
+			riscv,isa = RISCV_ISA;
+			mmu-type = MMU_TYPE;
+			clock-frequency = <65000000>;
+			d-cache-block-size = <16>;
+			d-cache-sets = <512>;
+			d-cache-size = <32768>;
+			i-cache-block-size = <16>;
+			i-cache-sets = <512>;
+			i-cache-size = <32768>;
+			next-level-cache = <&l2>;
+
+			cpu0_intc: interrupt-controller {
+				#address-cells = <0>;
+				#interrupt-cells = <1>;
+				interrupt-controller;
+				compatible = "riscv,cpu-intc";
+			};
+		};
+
+		cpu1: cpu@1 {
+			device_type = "cpu";
+			reg = <1>;
+			status = "okay";
+			compatible = "syntacore,scr7","riscv";
+			riscv,isa = RISCV_ISA;
+			mmu-type = MMU_TYPE;
+			clock-frequency = <65000000>;
+			d-cache-block-size = <16>;
+			d-cache-sets = <512>;
+			d-cache-size = <32768>;
+			i-cache-block-size = <16>;
+			i-cache-sets = <512>;
+			i-cache-size = <32768>;
+			next-level-cache = <&l2>;
+
+			cpu1_intc: interrupt-controller {
+				#address-cells = <0>;
+				#interrupt-cells = <1>;
+				interrupt-controller;
+				compatible = "riscv,cpu-intc";
+			};
+		};
+
+		cpu2: cpu@2 {
+			device_type = "cpu";
+			reg = <2>;
+			status = "okay";
+			compatible = "syntacore,scr7","riscv";
+			riscv,isa = RISCV_ISA;
+			mmu-type = MMU_TYPE;
+			clock-frequency = <65000000>;
+			d-cache-block-size = <16>;
+			d-cache-sets = <512>;
+			d-cache-size = <32768>;
+			i-cache-block-size = <16>;
+			i-cache-sets = <512>;
+			i-cache-size = <32768>;
+			next-level-cache = <&l2>;
+
+			cpu2_intc: interrupt-controller {
+				#address-cells = <0>;
+				#interrupt-cells = <1>;
+				interrupt-controller;
+				compatible = "riscv,cpu-intc";
+			};
+		};
+
+		cpu3: cpu@3 {
+			device_type = "cpu";
+			reg = <3>;
+			status = "okay";
+			compatible = "syntacore,scr7","riscv";
+			riscv,isa = RISCV_ISA;
+			mmu-type = MMU_TYPE;
+			clock-frequency = <65000000>;
+			d-cache-block-size = <16>;
+			d-cache-sets = <512>;
+			d-cache-size = <32768>;
+			i-cache-block-size = <16>;
+			i-cache-sets = <512>;
+			i-cache-size = <32768>;
+			next-level-cache = <&l2>;
+
+			cpu3_intc: interrupt-controller {
+				#address-cells = <0>;
+				#interrupt-cells = <1>;
+				interrupt-controller;
+				compatible = "riscv,cpu-intc";
+			};
+		};
+	};
+
+	l2: l2cache@fffffff0041000 {
+		compatible = "syntacore,l2-cache", "cache";
+		reg = <0xffffff 0xf0041000 0x0 0x1000>;
+		cache-unified;
+		cache-size = <0x80000>; // 512 KB
+		cache-sets = <2048>;
+		cache-block-size = <32>;
+		cache-level = <2>;
+	};
+
+	clocks {
+		sysclk: sys {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-frequency = <65000000>;
+		};
+	};
+
+	iccm {
+		compatible = "syntacore,iccm";
+		mbox-mapping =
+			<&cpu0 0>,
+			<&cpu1 1>,
+			<&cpu2 2>,
+			<&cpu3 3>;
+	};
+
+	mtimer0: mtimer@fffffff0040000 {
+		compatible = "syntacore,mtimer";
+		reg = <0xffffff 0xf0040000 0x0 0x1000>;
+		clocks = <&sysclk>;
+	};
+};

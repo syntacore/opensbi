@@ -262,7 +262,7 @@ static int __fdt_parse_region(void *fdt, int domain_offset,
 	region->order = val32;
 
 	/* Read "mmio" DT property */
-	region->flags = region_access & SBI_DOMAIN_MEMREGION_ACCESS_MASK;
+	region->flags = region_access;
 	if (fdt_get_property(fdt, region_offset, "mmio", NULL))
 		region->flags |= SBI_DOMAIN_MEMREGION_MMIO;
 

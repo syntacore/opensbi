@@ -1,0 +1,55 @@
+# SPDX-License-Identifier: BSD-2-Clause
+
+config PLATFORM_SYNTACORE
+	bool
+	select FDT
+	select FDT_DOMAIN
+	select FDT_PMU
+	select FDT_TIMER
+	select FDT_IPI
+	select FDT_SERIAL
+	select FDT_SERIAL_UART8250
+	select FDT_IRQCHIP
+	select FDT_IRQCHIP_PLIC
+	select SBI_ECALL_VENDOR
+	default y
+
+if PLATFORM_SYNTACORE
+
+config PLATFORM_SYNTACORE_SCR5
+	bool "Syntacore SCR5 cores support"
+	default n
+
+config PLATFORM_SYNTACORE_SCR7
+	bool "Syntacore SCR7 cores support"
+	default n
+
+config PLATFORM_SYNTACORE_SDK_VCU118
+	bool "Syntacore VCU118 EVK"
+	default n
+
+config PLATFORM_SYNTACORE_BUNDLED_FDT
+	bool "Bundle the FDT file into OpenSBI firmware"
+	default n
+
+if PLATFORM_SYNTACORE_BUNDLED_FDT
+
+config PLATFORM_SYNTACORE_BUNDLED_FDT_NAME
+	string "Bundled FTD file name"
+	default ""
+
+endif
+
+config PLATFORM_SYNTACORE_TEXT_START
+	hex ".text start addr"
+	default 0x0
+
+config PLATFORM_SYNTACORE_JUMP_ADDR
+	hex "fw_jump address"
+	default 0x200000
+
+config PLATFORM_SYNTACORE_JUMP_FDT_ADDR
+	hex "fw_jump fdt address"
+	default 0x2200000
+
+endif

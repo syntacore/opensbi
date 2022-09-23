@@ -29,6 +29,7 @@
 #define SBI_EXT_HSM				0x48534D
 #define SBI_EXT_SRST				0x53525354
 #define SBI_EXT_PMU				0x504D55
+#define SBI_EXT_DBTR				0x44425452
 
 /* SBI function IDs for BASE extension*/
 #define SBI_EXT_BASE_GET_SPEC_VERSION		0x0
@@ -99,6 +100,15 @@
 #define SBI_EXT_PMU_COUNTER_START	0x3
 #define SBI_EXT_PMU_COUNTER_STOP	0x4
 #define SBI_EXT_PMU_COUNTER_FW_READ	0x5
+
+/* SBI function IDs for DBTR extension */
+#define SBI_EXT_DBTR_NUM_TRIGGERS	0x0
+#define SBI_EXT_DBTR_TRIGGER_READ	0x1
+#define SBI_EXT_DBTR_TRIGGER_INSTALL	0x2
+#define SBI_EXT_DBTR_TRIGGER_UNINSTALL	0x3
+#define SBI_EXT_DBTR_TRIGGER_ENABLE	0x4
+#define SBI_EXT_DBTR_TRIGGER_UPDATE	0x5
+#define SBI_EXT_DBTR_TRIGGER_DISABLE	0x6
 
 /** General pmu event codes specified in SBI PMU extension */
 enum sbi_pmu_hw_generic_events_t {

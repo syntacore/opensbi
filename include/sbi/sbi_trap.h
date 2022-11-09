@@ -224,6 +224,10 @@ static inline unsigned long sbi_regs_gva(const struct sbi_trap_regs *regs)
 #endif
 }
 
+#ifdef CONFIG_PLATFORM_SYNTACORE_SWPW
+int scr_tlb_miss_trap_handler(struct sbi_trap_regs *regs);
+#endif
+
 int sbi_trap_redirect(struct sbi_trap_regs *regs,
 		      struct sbi_trap_info *trap);
 

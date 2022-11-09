@@ -19,6 +19,7 @@ if PLATFORM_SYNTACORE
 config PLATFORM_SYNTACORE_SCR5
 	bool "Syntacore SCR5 cores support"
 	default n
+	select PLATFORM_SYNTACORE_SWPW
 
 config PLATFORM_SYNTACORE_SCR7
 	bool "Syntacore SCR7 cores support"
@@ -26,6 +27,10 @@ config PLATFORM_SYNTACORE_SCR7
 
 config PLATFORM_SYNTACORE_SDK_VCU118
 	bool "Syntacore VCU118 EVK"
+	default n
+
+config PLATFORM_SYNTACORE_SWPW
+	bool "Syntacore Software Pagewalker"
 	default n
 
 config PLATFORM_SYNTACORE_BUNDLED_FDT

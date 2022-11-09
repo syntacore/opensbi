@@ -12,6 +12,7 @@ platform-asflags-y =
 platform-ldflags-y =
 
 platform-objs-y += platform.o scr_mtimer.o scr_mpu.o scr_cache.o scr_iccm.o scr_plic.o scr_l2_pmu.o
+platform-objs-$(CONFIG_PLATFORM_SYNTACORE_SWPW) += scr_swpw.o
 ifeq ($(CONFIG_PLATFORM_SYNTACORE_BUNDLED_FDT), y)
 platform-objs-y += dts/$(subst ",,$(CONFIG_PLATFORM_SYNTACORE_BUNDLED_FDT_NAME)).o
 endif

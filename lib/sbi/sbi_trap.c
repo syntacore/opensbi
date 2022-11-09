@@ -287,6 +287,23 @@ struct sbi_trap_regs *sbi_trap_handler(struct sbi_trap_regs *regs)
 	}
 
 	switch (mcause) {
+#ifdef CONFIG_PLATFORM_SYNTACORE_SWPW
+	case CAUSE_SYNTACORE_TLB_MISS:
+		rc = scr_tlb_miss_trap_handler(regs);
+		if (rc) {
+			/* let the supervisor handle this crap */
+			trap.epc = regs->mepc;
+			trap.cause = 0xc; /* 0xe -> 0xc (inst pagefault) */
+			trap.tval = mtval;
+			trap.tval2 = mtval2;
+			trap.tinst = mtinst;
+			trap.gva   = sbi_regs_gva(regs);
+
+			rc = sbi_trap_redirect(regs, &trap);
+		}
+		msg = "tlb miss handler failed";
+		break;
+#endif
 	case CAUSE_ILLEGAL_INSTRUCTION:
 		rc  = sbi_illegal_insn_handler(mtval, regs);
 		msg = "illegal instruction handler failed";

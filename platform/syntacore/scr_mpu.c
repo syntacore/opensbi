@@ -147,95 +147,22 @@ void scr_mpu_print_info(void)
 	sbi_printf("\n");
 }
 
-static int scr_fdt_parse_regions(void *fdt, struct sbi_domain_memregion *reset_regions)
+void scr_hart_early_mpu_configure()
 {
-	const u32 *regions_map;
-	uint32_t regn_phandle;
-	int cpus_offset, region_offset, reg_len, len, i, regs_num = 0;
-	u32 val32;
-	u64 val64;
-	const u32 *val;
-	struct sbi_domain_memregion *regn;
+	int i;
 
-	/* Find /cpus DT node */
-	cpus_offset = fdt_path_offset(fdt, "/cpus");
-	if (cpus_offset < 0)
-		return 0;
-
-	/** get early init regions */
-	regions_map = fdt_getprop(fdt, cpus_offset, "scr-mpu-early-init", &reg_len);
-	if (!regions_map || reg_len < 8)
-		return 0;
-
-	reg_len = reg_len / (sizeof(u32) * 2);
-	for (i = 0; i < reg_len; i++) {
-		regn = &reset_regions[i];
-		regn_phandle = fdt32_to_cpu(regions_map[2 * i]);
-		region_offset = fdt_node_offset_by_phandle(fdt, regn_phandle);
-
-		/* Read "base" DT property */
-		val = fdt_getprop(fdt, region_offset, "base", &len);
-		if (!val && len >= 8)
-			return regs_num;
-
-		val64 = fdt32_to_cpu(val[0]);
-		val64 = (val64 << 32) | fdt32_to_cpu(val[1]);
-		regn->base = val64;
-
-		/* Read "order" DT property */
-		val = fdt_getprop(fdt, region_offset, "order", &len);
-		if (!val && len >= 4)
-			return regs_num;
-
-		val32 = fdt32_to_cpu(*val);
-		if (val32 < 3 || __riscv_xlen < val32)
-			return regs_num;
-
-		regn->order = val32;
-		regn->flags = fdt32_to_cpu(regions_map[2 * i + 1]) & ~(SCR_MPU_DEFINED_FLAGS);
-
-		regs_num++;
-	}
-
-	return regs_num;
-}
-
-static void scr_mpu_early_init(struct sbi_domain_memregion *reset_regions, int memregs_count)
-{
-	int idx = 1, i;
-	struct sbi_domain_memregion *reg;
-
-	// region 0 is supposed to be set up after reset,
-	// but we still leave it here, just in case
-	scr_mpu_region_update(0, 0, 0, (SCR_MPU_MMODE_ALL | SCR_MPU_NOCACHE_STRONG_ORDER | SCR_MPU_CTRL_VALID));
+	/* update default 0 region */
+	scr_mpu_region_update(0, 0, 0, SCR_MPU_MMODE_READ | SCR_MPU_MMODE_WRITE | SCR_MPU_MMODE_EXECUTE | SCR_MPU_NOCACHE_STRONG_ORDER | SCR_MPU_CTRL_VALID);
 	RISCV_FENCE_I;
 
-	for (i = 0; i < memregs_count; i++) {
-		reg = &reset_regions[i];
+	scr_mpu_region_setup(1, (unsigned long)MCFG_REGION_BASE, MCFG_REGION_SIZE, SCR_MPU_NOCACHE_STRONG_ORDER | SCR_MPU_MMIO | SCR_MPU_MMODE_READ | SCR_MPU_MMODE_WRITE | SCR_MPU_CTRL_VALID);
+	RISCV_FENCE_I;
 
-		scr_mpu_region_setup(idx++, reg->base,
-				     BIT(reg->order), reg->flags | SCR_MPU_CTRL_VALID);
-		RISCV_FENCE_I;
-	}
-
-	for (i = idx; i < SCR_MPU_MAX_REGIONS; i++) {
+	for (i=2;;i++) {
 		csr_write(SCR_CSR_MPU_SEL, i);
-		if (csr_read(SCR_CSR_MPU_SEL) == 0) // paranoid
+		if (csr_read(SCR_CSR_MPU_SEL) == 0)
 			break;
-
 		csr_write(SCR_CSR_MPU_CTRL, 0);
-		csr_write(SCR_CSR_MPU_ADDR, SCR_MPU_MK_ADDR(0));
-		csr_write(SCR_CSR_MPU_MASK, ~0UL);
 		RISCV_FENCE_I;
 	}
-}
-
-int scr_hart_early_mpu_configure(bool cold_boot, void *fdt)
-{
-	struct sbi_domain_memregion reset_regions[SCR_MPU_MAX_REGIONS];
-	int regs_num = scr_fdt_parse_regions(fdt, reset_regions);
-
-	scr_mpu_early_init(reset_regions, regs_num);
-
-	return 0;
 }

@@ -14,6 +14,10 @@
 
 #include <sbi/sbi_types.h>
 
+/* Early MPU init */
+#define MCFG_REGION_BASE 0xfffffff0040000
+#define MCFG_REGION_SIZE 8192
+
 /* MPU CSRs */
 #define SCR_CSR_MPU_BASE	0xbc4
 #define SCR_CSR_MPU_SEL		(SCR_CSR_MPU_BASE + 0x00)
@@ -43,8 +47,7 @@
 #define SCR_MPU_REGION_ALIGN	0x1000
 #define SCR_MPU_MAX_REGIONS	16
 
-void scr_hart_early_mpu_setup_mcfg(unsigned long mcfg_base, unsigned long mcfg_size);
-int scr_hart_early_mpu_configure(bool cold_init, void *fdt);
+void scr_hart_early_mpu_configure(void);
 void scr_hart_mpu_configure(void *fdt);
 
 void scr_mpu_print_info(void);

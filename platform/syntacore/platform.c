@@ -83,11 +83,6 @@ unsigned long fw_platform_init(unsigned long arg0, unsigned long arg1,
 	   */
 	platform_set_fdt(fdt);
 
-#if CONFIG_PLATFORM_SYNTACORE_SDK_VCU118
-	/* initial MPU configuration from fdt/<scr-mpu-early-init> */
-	scr_hart_early_mpu_configure(true, fdt);
-#endif
-
 	/** char name[64]; */
 	model = fdt_getprop(fdt, root_offset, "model", &len);
 	if (model) {
@@ -160,6 +155,8 @@ static struct sbi_system_reset_device scr_reset = {
 
 static int scr_early_init(bool cold_boot)
 {
+	scr_hart_early_mpu_configure();
+
 	scr_cache_l1_disable();
 #ifdef CONFIG_PLATFORM_SYNTACORE_L1_CACHE
 	scr_cache_l1_enable();

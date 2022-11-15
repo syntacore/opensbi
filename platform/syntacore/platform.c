@@ -170,6 +170,14 @@ static int scr_early_init(bool cold_boot)
 	return 0;
 }
 
+#ifdef CONFIG_PLATFORM_SYNTACORE_SCR7
+static inline void scr_enable_swpw_feature()
+{
+	unsigned long val = csr_read(0xbe0);
+	csr_write(0xbe0, val & ~BIT(0));
+}
+#endif
+
 static int scr_final_init(bool cold_boot)
 {
 	void *fdt = platform_get_fdt();
@@ -220,6 +228,12 @@ static int scr_final_init(bool cold_boot)
 
 	if (cold_boot)
 		scr_mpu_print_info();
+
+#if defined(CONFIG_PLATFORM_SYNTACORE_SCR7) && defined(CONFIG_PLATFORM_SYNTACORE_SWPW)
+	/* For SCR7 default mode is hardware page walker, we can force software mode if needed */
+	sbi_printf("Enable SWPW feature...\n\n");
+	scr_enable_swpw_feature();
+#endif
 
 	return 0;
 }

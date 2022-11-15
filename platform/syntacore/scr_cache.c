@@ -117,6 +117,17 @@ void scr_cache_flush(void *vaddr, unsigned long size)
 #define SCR_L2_DESCR_CORES(val)		(((val >> L2_CSR_DESCR_OFFS_CORES) & \
 						L2_CSR_DESCR_MASK_CORES) + 1)
 
+bool scr_l2cache_is_enabled(void)
+{
+	volatile void *addr;
+
+	if (l2_cache_addr == -1UL)
+		return false;
+
+	addr = (void *)l2_cache_addr;
+	return !!readl_relaxed(addr + SCR_L2_CACHE_ENABLE);
+}
+
 void scr_l2cache_enable(void)
 {
 	volatile void *addr;

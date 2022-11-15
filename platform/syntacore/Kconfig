@@ -37,6 +37,14 @@ config PLATFORM_SYNTACORE_SWPW
 	bool "Syntacore Software Pagewalker"
 	default n
 
+config PLATFORM_SYNTACORE_L1_CACHE
+	bool "Enable L1$i & L1$d"
+	default y
+
+config PLATFORM_SYNTACORE_L2_CACHE
+	bool "Enable L2$"
+	default y
+
 config PLATFORM_SYNTACORE_BUNDLED_FDT
 	bool "Bundle the FDT file into OpenSBI firmware"
 	default n

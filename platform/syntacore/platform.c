@@ -86,10 +86,6 @@ unsigned long fw_platform_init(unsigned long arg0, unsigned long arg1,
 #if CONFIG_PLATFORM_SYNTACORE_SDK_VCU118
 	/* initial MPU configuration from fdt/<scr-mpu-early-init> */
 	scr_hart_early_mpu_configure(true, fdt);
-
-	/* Init caches early */
-	scr_cache_l1_disable();
-	scr_cache_l1_enable();
 #endif
 
 	/** char name[64]; */
@@ -164,10 +160,10 @@ static struct sbi_system_reset_device scr_reset = {
 
 static int scr_early_init(bool cold_boot)
 {
-	if (!cold_boot) {
-		scr_cache_l1_disable();
-		scr_cache_l1_enable();
-	}
+	scr_cache_l1_disable();
+#ifdef CONFIG_PLATFORM_SYNTACORE_L1_CACHE
+	scr_cache_l1_enable();
+#endif
 
 	if (cold_boot) {
 		sbi_hsm_set_device(&scr_hsm);
@@ -201,10 +197,18 @@ static int scr_final_init(bool cold_boot)
 
 		/* init SCR L2 Cache - it's okay to fail */
 		rc = scr_fdt_l2_cache_init(fdt);
-		if (!rc)
+		if (!rc) {
+			sbi_printf("L2$ was %s at start\n", scr_l2cache_is_enabled()?"enabled":"disabled");
+#ifdef CONFIG_PLATFORM_SYNTACORE_L2_CACHE
 			scr_l2cache_enable();
-		else
+#else
+			if (scr_l2cache_is_enabled())
+				scr_l2cache_disable();
+#endif
+		}
+		else {
 			sbi_printf("failed to init SCR L2 Cache with %d\n", rc);
+		}
 
 		scr_print_l2cache_info();
 

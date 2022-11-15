@@ -87,6 +87,8 @@ void scr_cache_l1_disable(void);
 void scr_l2cache_enable(void);
 void scr_l2cache_disable(void);
 
+bool scr_l2cache_is_enabled(void);
+
 void scr_cache_flush(void *vaddr, unsigned long size);
 
 void scr_print_l1cache_info(void);

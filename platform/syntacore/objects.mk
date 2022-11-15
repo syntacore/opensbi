@@ -5,7 +5,7 @@
 #
 
 # Compiler flags
-platform-cppflags-y =
+platform-cppflags-y = -DPLATFORM_RISCV_XLEN=$(PLATFORM_RISCV_XLEN)
 platform-cflags-y =
 #platform-cflags-y += -g3 -ggdb
 platform-asflags-y =
@@ -31,7 +31,7 @@ FW_TEXT_START=$(CONFIG_PLATFORM_SYNTACORE_TEXT_START)
 
 FW_JUMP=y
 FW_JUMP_ADDR=$(CONFIG_PLATFORM_SYNTACORE_JUMP_ADDR)
-# fdt relocation address
+# fdt relocation address for fw_jump mode
 FW_JUMP_FDT_ADDR=$(CONFIG_PLATFORM_SYNTACORE_JUMP_FDT_ADDR)
 
 FW_PAYLOAD=y
@@ -40,6 +40,8 @@ FW_PAYLOAD_ALIGN=0x40000
 else
 FW_PAYLOAD_ALIGN=0x20000
 endif
+# fdt relocation address for fw_payload
+FW_PAYLOAD_FDT_ADDR=$(CONFIG_PLATFORM_SYNTACORE_JUMP_FDT_ADDR)
 
 # TODO: add support for dynamic mode in future
 #       for instance: spl->opensbi(fw_dynamic)->u-boot boot flow
@@ -56,5 +58,5 @@ qemu_machine = syntacore_scr5
 endif
 
 platform-runcmd = qemu-system-riscv$(PLATFORM_RISCV_XLEN) \
-		  -M $(qemu_machine) -smp 4 -nographic \
+		  -M $(qemu_machine) -smp $(CONFIG_PLATFORM_SYNTACORE_NR_CPUS) -nographic \
 		  -kernel $(build_dir)/platform/syntacore/firmware/fw_payload.elf

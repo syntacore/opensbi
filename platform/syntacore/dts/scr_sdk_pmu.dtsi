@@ -5,11 +5,30 @@
 / {
 	pmu {
 		compatible = "riscv,pmu";
-		interrupts-extended =
-			<&cpu0_intc 13>,
-			<&cpu1_intc 13>,
-			<&cpu2_intc 13>,
-			<&cpu3_intc 13>;
+		interrupts-extended = <
+			&cpu0_intc 13
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 1
+			&cpu1_intc 13
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 2
+			&cpu2_intc 13
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 3
+			&cpu3_intc 13
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 4
+			&cpu4_intc 13
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 5
+			&cpu5_intc 13
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 6
+			&cpu6_intc 13
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 7
+			&cpu7_intc 13
+#endif
+			>;
 		riscv,event-to-mhpmcounters =
 			<0x04 0x06 0x78>,
 			<0x08 0x09 0x78>;

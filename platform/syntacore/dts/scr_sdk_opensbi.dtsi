@@ -9,6 +9,16 @@
 		opensbi-domains {
 			compatible = "opensbi,domain,config";
 
+			allmem: allmem {
+				compatible = "opensbi,domain,memregion";
+				base = <0x0 0x0>;
+#if PLATFORM_RISCV_XLEN == 32
+				order = <31>;
+#else
+				order = <32>;
+#endif
+			};
+
 			mcfg_reg: mcfg_reg {
 				compatible = "opensbi,domain,memregion";
 				base = <0xffffff 0xf0040000>;
@@ -29,8 +39,13 @@
 
 			dma_mem: dma_mem {
 				compatible = "opensbi,domain,memregion";
+#if PLATFORM_RISCV_XLEN == 32
+				base = <0x0 0x7f000000>;
+				order = <24>;
+#else
 				base = <0x0 0xff000000>;
 				order = <24>;
+#endif
 			};
 
 			pci_io: pci_io {
@@ -45,45 +60,86 @@
 				order = <29>;
 			};
 
-			allmem: allmem {
-				compatible = "opensbi,domain,memregion";
-				base = <0x0 0x0>;
-				order = <32>;
-			};
-
 			tdomain: trusted-domain {
 				compatible = "opensbi,domain,instance";
-				possible-harts = <&cpu0 &cpu1 &cpu2 &cpu3>;
+				possible-harts = <
+					&cpu0
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 1
+					&cpu1
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 2
+					&cpu2
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 3
+					&cpu3
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 4
+					&cpu4
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 5
+					&cpu5
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 6
+					&cpu6
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 7
+					&cpu7
+#endif
+					>;
 				regions =
-					<&allmem (SCR_MPU_DEFINED_FLAGS | SCR_MPU_MODE_ALL)>,
-					<&pci_io (SCR_MPU_NOCACHE_STRONG_ORDER | SCR_MPU_DEFINED_FLAGS | SCR_MPU_MMODE_READ | SCR_MPU_MMODE_WRITE | SCR_MPU_SMODE_READ | SCR_MPU_SMODE_WRITE)>,
-					<&pci_cfg (SCR_MPU_NOCACHE_STRONG_ORDER | SCR_MPU_DEFINED_FLAGS | SCR_MPU_MMODE_READ | SCR_MPU_MMODE_WRITE | SCR_MPU_SMODE_READ | SCR_MPU_SMODE_WRITE)>,
-					<&dma_mem (SCR_MPU_NOCACHE_STRONG_ORDER | SCR_MPU_DEFINED_FLAGS | SCR_MPU_MMODE_READ | SCR_MPU_MMODE_WRITE | SCR_MPU_SMODE_READ | SCR_MPU_SMODE_WRITE)>,
 					<&mcfg_reg (SCR_MPU_MMIO | SCR_MPU_DEFINED_FLAGS | SCR_MPU_MMODE_READ | SCR_MPU_MMODE_WRITE)>,
 					<&mmio_reg (SCR_MPU_NOCACHE_STRONG_ORDER | SCR_MPU_DEFINED_FLAGS | SCR_MPU_MMODE_READ | SCR_MPU_MMODE_WRITE | SCR_MPU_SMODE_READ | SCR_MPU_SMODE_WRITE)>,
-					<&plic_reg (SCR_MPU_NOCACHE_STRONG_ORDER | SCR_MPU_DEFINED_FLAGS | SCR_MPU_MMODE_READ | SCR_MPU_MMODE_WRITE | SCR_MPU_SMODE_READ | SCR_MPU_SMODE_WRITE)>;
+					<&plic_reg (SCR_MPU_NOCACHE_STRONG_ORDER | SCR_MPU_DEFINED_FLAGS | SCR_MPU_MMODE_READ | SCR_MPU_MMODE_WRITE | SCR_MPU_SMODE_READ | SCR_MPU_SMODE_WRITE)>,
+					<&pci_cfg (SCR_MPU_NOCACHE_STRONG_ORDER | SCR_MPU_DEFINED_FLAGS | SCR_MPU_MMODE_READ | SCR_MPU_MMODE_WRITE | SCR_MPU_SMODE_READ | SCR_MPU_SMODE_WRITE)>,
+					<&pci_io (SCR_MPU_NOCACHE_STRONG_ORDER | SCR_MPU_DEFINED_FLAGS | SCR_MPU_MMODE_READ | SCR_MPU_MMODE_WRITE | SCR_MPU_SMODE_READ | SCR_MPU_SMODE_WRITE)>,
+					<&dma_mem (SCR_MPU_NOCACHE_STRONG_ORDER | SCR_MPU_DEFINED_FLAGS | SCR_MPU_MMODE_READ | SCR_MPU_MMODE_WRITE | SCR_MPU_SMODE_READ | SCR_MPU_SMODE_WRITE)>,
+					<&allmem (SCR_MPU_DEFINED_FLAGS | SCR_MPU_MODE_ALL)>;
 				boot-hart = <&cpu0>;
+				/* 0 = U, 1 = S, 3 = M */
+				next-mode = <0x1>;
 				system-reset-allowed;
 			};
 		};
 	};
 
 	cpus {
-		/* early mpu init by opensbi */
-		scr-mpu-early-init =
-			<&mcfg_reg (SCR_MPU_MMIO | SCR_MPU_DEFINED_FLAGS | SCR_MPU_MMODE_RW)>;
-
 		cpu0: cpu@0 {
 			opensbi-domain = <&tdomain>;
 		};
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 1
 		cpu1: cpu@1 {
 			opensbi-domain = <&tdomain>;
 		};
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 2
 		cpu2: cpu@2 {
 			opensbi-domain = <&tdomain>;
 		};
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 3
 		cpu3: cpu@3 {
 			opensbi-domain = <&tdomain>;
 		};
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 4
+		cpu4: cpu@4 {
+			opensbi-domain = <&tdomain>;
+		};
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 5
+		cpu5: cpu@5 {
+			opensbi-domain = <&tdomain>;
+		};
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 6
+		cpu6: cpu@6 {
+			opensbi-domain = <&tdomain>;
+		};
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 7
+		cpu7: cpu@7 {
+			opensbi-domain = <&tdomain>;
+		};
+#endif
 	};
 };

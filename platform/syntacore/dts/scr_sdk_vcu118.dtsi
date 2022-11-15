@@ -10,16 +10,25 @@
 		#address-cells = <2>;
 		#size-cells = <2>;
 		device_type = "memory";
+#if PLATFORM_RISCV_XLEN == 32
+		reg = <0x0 0x0 0x0 0x7f000000>;
+#else
 		reg = <0x0 0x0 0x0 0xff000000>;
+#endif
 	};
 
 	reserved-memory {
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-		dtb_dma_mem_name: scr-dma@ff000000 {
-			compatible = "scr-sdk-dma-pool";
+#if PLATFORM_RISCV_XLEN == 32
+		scr-dma@7f000000 {
+			reg = <0 0x7f000000 0 0x1000000>;
+#else
+		scr-dma@ff000000 {
 			reg = <0 0xff000000 0 0x1000000>;
+#endif
+			compatible = "scr-sdk-dma-pool";
 		};
 	};
 
@@ -98,14 +107,13 @@
 			#dma-cells = <1>;
 			axistream-connected = <&axi_ethernet_0>;
 			axistream-control-connected = <&axi_ethernet_0>;
-			clock-frequency = <dev3_freq:0>;
 			clock-names = "s_axi_lite_aclk";
 			clocks = <&clk_bus_0>;
 			compatible = "xlnx,eth-dma";
 			interrupt-parent = <&plic>;
 			interrupts = <3>,<2>;
 			reg = <0 0x80000 0 0x10000>;
-			xlnx,include-dre ;
+			xlnx,include-dre;
 		};
 	};
 };

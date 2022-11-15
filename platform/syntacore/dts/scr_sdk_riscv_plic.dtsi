@@ -13,9 +13,27 @@
 
 		interrupts-extended = <
 			&cpu0_intc (-1) &cpu0_intc 9
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 1
 			&cpu1_intc (-1) &cpu1_intc 9
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 2
 			&cpu2_intc (-1) &cpu2_intc 9
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 3
 			&cpu3_intc (-1) &cpu3_intc 9
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 4
+			&cpu4_intc (-1) &cpu4_intc 9
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 5
+			&cpu5_intc (-1) &cpu5_intc 9
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 6
+			&cpu6_intc (-1) &cpu6_intc 9
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 7
+			&cpu7_intc (-1) &cpu7_intc 9
+#endif
 		>;
 
 		reg = <0xffffff 0xfe000000 0x0 0x300000>;

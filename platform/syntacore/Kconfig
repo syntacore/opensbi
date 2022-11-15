@@ -16,6 +16,10 @@ config PLATFORM_SYNTACORE
 
 if PLATFORM_SYNTACORE
 
+config PLATFORM_SYNTACORE_NR_CPUS
+	int "Number of HARTs"
+	default 4
+
 config PLATFORM_SYNTACORE_SCR5
 	bool "Syntacore SCR5 cores support"
 	default n

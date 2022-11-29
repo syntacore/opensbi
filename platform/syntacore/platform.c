@@ -117,10 +117,6 @@ fail:
 
 static int scr_hart_start(u32 hartid, ulong saddr)
 {
-	atomic_t *state = sbi_hsm_get_state_ptr(hartid);
-
-	scr_cache_flush(state, sizeof(atomic_t));
-
 	scr_ipi_send(hartid);
 
 	sbi_printf("opensbi: start hart#%d @ %lx\n", hartid, saddr);
@@ -153,7 +149,7 @@ static struct sbi_system_reset_device scr_reset = {
 	.system_reset = scr_system_reset
 };
 
-static int scr_early_init(bool cold_boot)
+static int scr_nascent_init()
 {
 	scr_hart_early_mpu_configure();
 
@@ -161,8 +157,22 @@ static int scr_early_init(bool cold_boot)
 #ifdef CONFIG_PLATFORM_SYNTACORE_L1_CACHE
 	scr_cache_l1_enable();
 #endif
+	return 0;
+}
 
+static int scr_early_init(bool cold_boot)
+{
 	if (cold_boot) {
+		/* init SCR L2 Cache - it's okay to fail */
+		int rc = scr_fdt_l2_cache_init(platform_get_fdt());
+		if (!rc) {
+			if (scr_l2cache_is_enabled())
+				scr_l2cache_disable();
+#ifdef CONFIG_PLATFORM_SYNTACORE_L2_CACHE
+			scr_l2cache_enable();
+#endif
+		}
+
 		sbi_hsm_set_device(&scr_hsm);
 		sbi_system_reset_add_device(&scr_reset);
 	}
@@ -200,28 +210,12 @@ static int scr_final_init(bool cold_boot)
 
 		scr_print_l1cache_info();
 
-		/* init SCR L2 Cache - it's okay to fail */
-		rc = scr_fdt_l2_cache_init(fdt);
-		if (!rc) {
-			sbi_printf("L2$ was %s at start\n", scr_l2cache_is_enabled()?"enabled":"disabled");
-#ifdef CONFIG_PLATFORM_SYNTACORE_L2_CACHE
-			scr_l2cache_enable();
-#else
-			if (scr_l2cache_is_enabled())
-				scr_l2cache_disable();
-#endif
-		}
-		else {
-			sbi_printf("failed to init SCR L2 Cache with %d\n", rc);
-		}
-
-		scr_print_l2cache_info();
-
 		/* init SCR L2 Cache PMU extension - it's okay to fail */
 		rc = scr_fdt_l2_pmu_init(fdt);
 		if (rc && rc != SBI_ENODEV)
-			sbi_printf("failed to init SCR L2 Cache PMU with %d\n",
-				   rc);
+			sbi_printf("failed to init SCR L2 Cache PMU with %d\n", rc);
+
+		scr_print_l2cache_info();
 	}
 
 	scr_hart_mpu_configure(fdt);
@@ -426,6 +420,7 @@ static int scr_vendor_ext_provider(long extid, long funcid,
 }
 
 const struct sbi_platform_operations platform_ops = {
+	.nascent_init		= scr_nascent_init,
 	.early_init		= scr_early_init,
 	.final_init		= scr_final_init,
 	.domains_init		= scr_domains_init,

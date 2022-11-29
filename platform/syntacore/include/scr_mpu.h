@@ -14,9 +14,15 @@
 
 #include <sbi/sbi_types.h>
 
-/* Early MPU init */
+/* Early MPU init regions */
 #define MCFG_REGION_BASE 0xfffffff0040000
 #define MCFG_REGION_SIZE 8192
+
+#define MMIO_REGION_BASE 0xffffffff000000
+#define MMIO_REGION_SIZE 0x800000
+
+#define PLIC_REGION_BASE 0xfffffffe000000
+#define PLIC_REGION_SIZE 0x1000000
 
 /* MPU CSRs */
 #define SCR_CSR_MPU_BASE	0xbc4

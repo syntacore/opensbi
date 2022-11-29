@@ -152,13 +152,27 @@ void scr_hart_early_mpu_configure()
 	int i;
 
 	/* update default 0 region */
-	scr_mpu_region_update(0, 0, 0, SCR_MPU_MMODE_READ | SCR_MPU_MMODE_WRITE | SCR_MPU_MMODE_EXECUTE | SCR_MPU_NOCACHE_STRONG_ORDER | SCR_MPU_CTRL_VALID);
+	scr_mpu_region_update(0, 0, 0, SCR_MPU_MMODE_ALL | SCR_MPU_CTRL_VALID);
 	RISCV_FENCE_I;
 
-	scr_mpu_region_setup(1, (unsigned long)MCFG_REGION_BASE, MCFG_REGION_SIZE, SCR_MPU_NOCACHE_STRONG_ORDER | SCR_MPU_MMIO | SCR_MPU_MMODE_READ | SCR_MPU_MMODE_WRITE | SCR_MPU_CTRL_VALID);
+	/* mtimer, l2$ */
+	scr_mpu_region_setup(1, MCFG_REGION_BASE, MCFG_REGION_SIZE, \
+				SCR_MPU_NOCACHE_STRONG_ORDER | SCR_MPU_MMIO | \
+				SCR_MPU_MMODE_RW | SCR_MPU_CTRL_VALID);
+
+	/* mmio region: uart */
+	scr_mpu_region_setup(2, MMIO_REGION_BASE, MMIO_REGION_SIZE, \
+				SCR_MPU_NOCACHE_STRONG_ORDER | \
+				SCR_MPU_MMODE_RW | SCR_MPU_CTRL_VALID);
+
+	/* plic */
+	scr_mpu_region_setup(3, PLIC_REGION_BASE, PLIC_REGION_SIZE, \
+				SCR_MPU_NOCACHE_STRONG_ORDER | \
+				SCR_MPU_MMODE_RW | SCR_MPU_CTRL_VALID);
+
 	RISCV_FENCE_I;
 
-	for (i=2;;i++) {
+	for (i=4;;i++) {
 		csr_write(SCR_CSR_MPU_SEL, i);
 		if (csr_read(SCR_CSR_MPU_SEL) == 0)
 			break;

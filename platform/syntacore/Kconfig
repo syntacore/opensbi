@@ -29,6 +29,10 @@ config PLATFORM_SYNTACORE_SCR7
 	bool "Syntacore SCR7 cores support"
 	default n
 
+config PLATFORM_SYNTACORE_SCR9
+	bool "Syntacore SCR9 cores support"
+	default n
+
 config PLATFORM_SYNTACORE_SDK_VCU118
 	bool "Syntacore VCU118 EVK"
 	default n

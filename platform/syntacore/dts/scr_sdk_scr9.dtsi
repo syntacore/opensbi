@@ -1,0 +1,272 @@
+/*
+ *  Copyright (C) 2016-2022 Syntacore
+ */
+
+#define RISCV_ISA	"rv64imafdc_sscofpmf"
+#define MMU_TYPE	"riscv,sv39"
+
+/ {
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		timebase-frequency = <1000000>;
+
+		cpu0: cpu@0 {
+			device_type = "cpu";
+			reg = <0>;
+			status = "okay";
+			compatible = "syntacore,scr9","riscv";
+			riscv,isa = RISCV_ISA;
+			mmu-type = MMU_TYPE;
+			clocks = <&sysclk>;
+			d-cache-block-size = <16>;
+			d-cache-sets = <512>;
+			d-cache-size = <32768>;
+			i-cache-block-size = <16>;
+			i-cache-sets = <512>;
+			i-cache-size = <32768>;
+			next-level-cache = <&l2>;
+
+			cpu0_intc: interrupt-controller {
+				#address-cells = <0>;
+				#interrupt-cells = <1>;
+				interrupt-controller;
+				compatible = "riscv,cpu-intc";
+			};
+		};
+
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 1
+		cpu1: cpu@1 {
+			device_type = "cpu";
+			reg = <1>;
+			status = "okay";
+			compatible = "syntacore,scr9","riscv";
+			riscv,isa = RISCV_ISA;
+			mmu-type = MMU_TYPE;
+			clocks = <&sysclk>;
+			d-cache-block-size = <16>;
+			d-cache-sets = <512>;
+			d-cache-size = <32768>;
+			i-cache-block-size = <16>;
+			i-cache-sets = <512>;
+			i-cache-size = <32768>;
+			next-level-cache = <&l2>;
+
+			cpu1_intc: interrupt-controller {
+				#address-cells = <0>;
+				#interrupt-cells = <1>;
+				interrupt-controller;
+				compatible = "riscv,cpu-intc";
+			};
+		};
+#endif
+
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 2
+		cpu2: cpu@2 {
+			device_type = "cpu";
+			reg = <2>;
+			status = "okay";
+			compatible = "syntacore,scr9","riscv";
+			riscv,isa = RISCV_ISA;
+			mmu-type = MMU_TYPE;
+			clocks = <&sysclk>;
+			d-cache-block-size = <16>;
+			d-cache-sets = <512>;
+			d-cache-size = <32768>;
+			i-cache-block-size = <16>;
+			i-cache-sets = <512>;
+			i-cache-size = <32768>;
+			next-level-cache = <&l2>;
+
+			cpu2_intc: interrupt-controller {
+				#address-cells = <0>;
+				#interrupt-cells = <1>;
+				interrupt-controller;
+				compatible = "riscv,cpu-intc";
+			};
+		};
+#endif
+
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 3
+		cpu3: cpu@3 {
+			device_type = "cpu";
+			reg = <3>;
+			status = "okay";
+			compatible = "syntacore,scr9","riscv";
+			riscv,isa = RISCV_ISA;
+			mmu-type = MMU_TYPE;
+			clocks = <&sysclk>;
+			d-cache-block-size = <16>;
+			d-cache-sets = <512>;
+			d-cache-size = <32768>;
+			i-cache-block-size = <16>;
+			i-cache-sets = <512>;
+			i-cache-size = <32768>;
+			next-level-cache = <&l2>;
+
+			cpu3_intc: interrupt-controller {
+				#address-cells = <0>;
+				#interrupt-cells = <1>;
+				interrupt-controller;
+				compatible = "riscv,cpu-intc";
+			};
+		};
+#endif
+
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 4
+		cpu4: cpu@4 {
+			device_type = "cpu";
+			reg = <4>;
+			status = "okay";
+			compatible = "syntacore,scr9","riscv";
+			riscv,isa = RISCV_ISA;
+			mmu-type = MMU_TYPE;
+			clocks = <&sysclk>;
+			d-cache-block-size = <16>;
+			d-cache-sets = <512>;
+			d-cache-size = <32768>;
+			i-cache-block-size = <16>;
+			i-cache-sets = <512>;
+			i-cache-size = <32768>;
+			next-level-cache = <&l2>;
+
+			cpu4_intc: interrupt-controller {
+				#address-cells = <0>;
+				#interrupt-cells = <1>;
+				interrupt-controller;
+				compatible = "riscv,cpu-intc";
+			};
+		};
+#endif
+
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 5
+		cpu5: cpu@5 {
+			device_type = "cpu";
+			reg = <5>;
+			status = "okay";
+			compatible = "syntacore,scr9","riscv";
+			riscv,isa = RISCV_ISA;
+			mmu-type = MMU_TYPE;
+			clocks = <&sysclk>;
+			d-cache-block-size = <16>;
+			d-cache-sets = <512>;
+			d-cache-size = <32768>;
+			i-cache-block-size = <16>;
+			i-cache-sets = <512>;
+			i-cache-size = <32768>;
+			next-level-cache = <&l2>;
+
+			cpu5_intc: interrupt-controller {
+				#address-cells = <0>;
+				#interrupt-cells = <1>;
+				interrupt-controller;
+				compatible = "riscv,cpu-intc";
+			};
+		};
+#endif
+
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 6
+		cpu6: cpu@6 {
+			device_type = "cpu";
+			reg = <6>;
+			status = "okay";
+			compatible = "syntacore,scr9","riscv";
+			riscv,isa = RISCV_ISA;
+			mmu-type = MMU_TYPE;
+			clocks = <&sysclk>;
+			d-cache-block-size = <16>;
+			d-cache-sets = <512>;
+			d-cache-size = <32768>;
+			i-cache-block-size = <16>;
+			i-cache-sets = <512>;
+			i-cache-size = <32768>;
+			next-level-cache = <&l2>;
+
+			cpu6_intc: interrupt-controller {
+				#address-cells = <0>;
+				#interrupt-cells = <1>;
+				interrupt-controller;
+				compatible = "riscv,cpu-intc";
+			};
+		};
+#endif
+
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 7
+		cpu7: cpu@7 {
+			device_type = "cpu";
+			reg = <7>;
+			status = "okay";
+			compatible = "syntacore,scr9","riscv";
+			riscv,isa = RISCV_ISA;
+			mmu-type = MMU_TYPE;
+			clocks = <&sysclk>;
+			d-cache-block-size = <16>;
+			d-cache-sets = <512>;
+			d-cache-size = <32768>;
+			i-cache-block-size = <16>;
+			i-cache-sets = <512>;
+			i-cache-size = <32768>;
+			next-level-cache = <&l2>;
+
+			cpu7_intc: interrupt-controller {
+				#address-cells = <0>;
+				#interrupt-cells = <1>;
+				interrupt-controller;
+				compatible = "riscv,cpu-intc";
+			};
+		};
+#endif
+	};
+
+	l2: l2cache@fffffff0041000 {
+		compatible = "syntacore,l2-cache", "cache";
+		reg = <0xffffff 0xf0041000 0x0 0x1000>;
+		cache-unified;
+		cache-size = <0x80000>; // 512 KB
+		cache-sets = <2048>;
+		cache-block-size = <32>;
+		cache-level = <2>;
+	};
+
+	clocks {
+		sysclk: sys {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-frequency = <65000000>;
+		};
+	};
+
+	iccm {
+		compatible = "syntacore,iccm";
+		mbox-mapping = <
+			&cpu0 0
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 1
+			&cpu1 1
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 2
+			&cpu2 2
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 3
+			&cpu3 3
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 4
+			&cpu4 4
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 5
+			&cpu5 5
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 6
+			&cpu6 6
+#endif
+#if CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 7
+			&cpu7 7
+#endif
+		>;
+	};
+
+	mtimer0: mtimer@fffffff0040000 {
+		compatible = "syntacore,mtimer";
+		reg = <0xffffff 0xf0040000 0x0 0x1000>;
+		clocks = <&sysclk>;
+	};
+};

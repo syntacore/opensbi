@@ -98,4 +98,4 @@ unsigned int scr_l2c_get_cpunum(void);
 
 int scr_fdt_l2_cache_init(void *fdt);
 
-#endif // _SCR7_CACHE_H_
+#endif // _SCR_CACHE_H_

@@ -51,10 +51,14 @@ FW_DYNAMIC=n
 # QEMU fast invocation:
 #  make PLATFORM=syntacore PLATFORM_DEFCONFIG=vcu118_scr7 run
 #
+ifeq ($(CONFIG_PLATFORM_SYNTACORE_SCR5), y)
+qemu_machine = syntacore_scr5
+endif
 ifeq ($(CONFIG_PLATFORM_SYNTACORE_SCR7), y)
 qemu_machine = syntacore_scr7
-else
-qemu_machine = syntacore_scr5
+endif
+ifeq ($(CONFIG_PLATFORM_SYNTACORE_SCR9), y)
+qemu_machine = syntacore_scr9
 endif
 
 platform-runcmd = qemu-system-riscv$(PLATFORM_RISCV_XLEN) \

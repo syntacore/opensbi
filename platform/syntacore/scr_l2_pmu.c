@@ -58,13 +58,21 @@ enum scr_l2_event_types {
 
 static uint32_t active_events[SCR_L2_PMU_CTR_NUM];
 
-#define get_cidx_addr(x, offset, cidx) (x + SCR_L2_PMU_CONTROL_BASE + offset + (cidx << 4))
+#define get_cidx_addr(x, offset, cidx) ((x) + SCR_L2_PMU_CONTROL_BASE + (offset) + ((cidx) << 4))
 
 static inline void scr_l2_pmu_ctr_write_hw(uint32_t cidx, uint64_t ival)
 {
-	void *addr = (void *)get_cidx_addr(l2_cache_addr, SCR_L2_CTR_LOW, cidx);
+	uint32_t low = 0, high = 0;
+	void *addr_low = 0, *addr_high = 0;
 
-	writel(ival, addr);
+	low = (uint32_t)(ival & 0xFFFFFFFF);
+	high = (uint32_t)(ival >> 32);
+
+	addr_low = (void *)get_cidx_addr(l2_cache_addr, SCR_L2_CTR_LOW, cidx);
+	addr_high = (void *)get_cidx_addr(l2_cache_addr, SCR_L2_CTR_HIGH, cidx);
+
+	writel(low, addr_low);
+	writel(high, addr_high);
 }
 
 static inline void scr_l2_pmu_ctr_start_hw(uint32_t cidx, uint64_t ival, bool ival_update)
@@ -107,8 +115,21 @@ void scr_l2_pmu_exit(struct sbi_scratch *scratch)
 
 int scr_l2_pmu_read(uint32_t cidx, unsigned long *cval)
 {
-	void *addr = (void *)get_cidx_addr(l2_cache_addr, SCR_L2_CTR_LOW, cidx);
-	*cval = readl(addr);
+	unsigned long low = 0, high_prev = 0, high = 0;
+	void *addr_low = 0, *addr_high = 0;
+
+	addr_low  = (void *)get_cidx_addr(l2_cache_addr, SCR_L2_CTR_LOW, cidx);
+	addr_high = (void *)get_cidx_addr(l2_cache_addr, SCR_L2_CTR_HIGH, cidx);
+
+	high_prev = readl(addr_high);
+	low = readl(addr_low);
+	high = readl(addr_high);
+
+	if (high != high_prev){
+		low = readl(addr_low);
+	}
+
+	*cval = ((uint64_t)high << 32) | low;
 	pr_l2_debug("%s cidx=0x%x, addr=0x%p, val=0x%lx\n", __func__, cidx, addr, *cval);
 
 	return 0;
@@ -157,16 +178,24 @@ int scr_l2_pmu_stop(unsigned long cbase, unsigned long cmask,
 }
 
 int scr_l2_pmu_start(unsigned long cbase, unsigned long cmask,
-		     unsigned long flags, uint64_t ival)
+		     unsigned long flags, unsigned long data1,
+		     unsigned long data2)
 {
 	int event_idx_type;
 	uint32_t event_code;
 	unsigned long ctr_mask = cmask << cbase;
 	int ret = SBI_EINVAL;
 	bool bUpdate = FALSE;
+	uint64_t init;
 
-	pr_l2_debug("%s cidx_base=0x%lx, cidx_mask=0x%lx, flags=0x%lx, ival=0x%lx\n",
-		   __func__, cbase, cmask, flags, ival);
+#if __riscv_xlen == 32
+	init = ((uint64_t)data2 << 32) | data1;
+#else
+	init = data1;
+#endif
+
+	pr_l2_debug("%s cidx_base=0x%lx, cidx_mask=0x%lx, flags=0x%lx, init=0x%lx\n",
+		   __func__, cbase, cmask, flags, init);
 
 	if (sbi_fls(ctr_mask) >= SCR_L2_PMU_CTR_NUM)
 		return ret;
@@ -180,7 +209,7 @@ int scr_l2_pmu_start(unsigned long cbase, unsigned long cmask,
 			/* Continue the start operation for other counters */
 			continue;
 
-		scr_l2_pmu_ctr_start_hw(cbase, ival, bUpdate);
+		scr_l2_pmu_ctr_start_hw(cbase, init, bUpdate);
 		ret = 0;
 	}
 
@@ -195,13 +224,20 @@ int scr_l2_pmu_get_info(uint32_t cidx, unsigned long *ctr_info)
 
 int scr_l2_pmu_cfg_match(unsigned long cidx_base, unsigned long cidx_mask,
 			 unsigned long flags, unsigned long event_idx,
-			 uint64_t event_data)
+			 unsigned long data1, unsigned long data2)
 {
 	int ctr_idx = SBI_ENOTSUPP;
 	unsigned int event_type = event_idx & SCR_L2_PMU_EVENT_SELECTOR_MASK;
 	uint64_t pmu_event_val = 0;
+	uint64_t event_data;
 	unsigned long tmp = cidx_mask << cidx_base;
 	int i;
+
+#if __riscv_xlen == 32
+	event_data = ((uint64_t)data2 << 32) | data1;
+#else
+	event_data = data1;
+#endif
 
 	pr_l2_debug("%s cidx_base=0x%lx, cidx_mask=0x%lx, flags=0x%lx, event_idx=0x%lx, event_data=0x%lx\n",
 		   __func__, cidx_base, cidx_mask, flags, event_idx, event_data);
@@ -309,8 +345,7 @@ int scr_pmu_ext_provider(long extid, long funcid,
 		break;
 	/* may be unneeded */
 	case SBI_EXT_PMU_COUNTER_CFG_MATCH:
-		ret = scr_l2_pmu_cfg_match(regs->a0, regs->a1, regs->a2, regs->a3, regs->a4);
-
+		ret = scr_l2_pmu_cfg_match(regs->a0, regs->a1, regs->a2, regs->a3, regs->a4, regs->a5);
 		if (ret >= 0) {
 			*out_value = ret;
 			ret = 0;
@@ -318,7 +353,7 @@ int scr_pmu_ext_provider(long extid, long funcid,
 		break;
 	/* surely needed */
 	case SBI_EXT_PMU_COUNTER_START:
-		ret = scr_l2_pmu_start(regs->a0, regs->a1, regs->a2, regs->a3);
+		ret = scr_l2_pmu_start(regs->a0, regs->a1, regs->a2, regs->a3, regs->a4);
 		break;
 	/* surely needed */
 	case SBI_EXT_PMU_COUNTER_STOP:

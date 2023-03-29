@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016-2022 Syntacore
+ *  Copyright (C) 2016-2023 Syntacore
  */
 
 #define RISCV_ISA	"rv64imafdc_sscofpmf"
@@ -26,6 +26,7 @@
 			i-cache-sets = <512>;
 			i-cache-size = <32768>;
 			next-level-cache = <&l2>;
+			riscv,cbom-block-size = <32>;
 
 			cpu0_intc: interrupt-controller {
 				#address-cells = <0>;
@@ -51,6 +52,7 @@
 			i-cache-sets = <512>;
 			i-cache-size = <32768>;
 			next-level-cache = <&l2>;
+			riscv,cbom-block-size = <32>;
 
 			cpu1_intc: interrupt-controller {
 				#address-cells = <0>;
@@ -77,6 +79,7 @@
 			i-cache-sets = <512>;
 			i-cache-size = <32768>;
 			next-level-cache = <&l2>;
+			riscv,cbom-block-size = <32>;
 
 			cpu2_intc: interrupt-controller {
 				#address-cells = <0>;
@@ -103,6 +106,7 @@
 			i-cache-sets = <512>;
 			i-cache-size = <32768>;
 			next-level-cache = <&l2>;
+			riscv,cbom-block-size = <32>;
 
 			cpu3_intc: interrupt-controller {
 				#address-cells = <0>;
@@ -129,6 +133,7 @@
 			i-cache-sets = <512>;
 			i-cache-size = <32768>;
 			next-level-cache = <&l2>;
+			riscv,cbom-block-size = <32>;
 
 			cpu4_intc: interrupt-controller {
 				#address-cells = <0>;
@@ -155,6 +160,7 @@
 			i-cache-sets = <512>;
 			i-cache-size = <32768>;
 			next-level-cache = <&l2>;
+			riscv,cbom-block-size = <32>;
 
 			cpu5_intc: interrupt-controller {
 				#address-cells = <0>;
@@ -181,6 +187,7 @@
 			i-cache-sets = <512>;
 			i-cache-size = <32768>;
 			next-level-cache = <&l2>;
+			riscv,cbom-block-size = <32>;
 
 			cpu6_intc: interrupt-controller {
 				#address-cells = <0>;
@@ -207,6 +214,7 @@
 			i-cache-sets = <512>;
 			i-cache-size = <32768>;
 			next-level-cache = <&l2>;
+			riscv,cbom-block-size = <32>;
 
 			cpu7_intc: interrupt-controller {
 				#address-cells = <0>;

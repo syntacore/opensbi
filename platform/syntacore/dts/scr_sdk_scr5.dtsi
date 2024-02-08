@@ -11,14 +11,6 @@
 #endif
 
 / {
-	clocks {
-		sysclk: sys {
-			compatible = "fixed-clock";
-			#clock-cells = <0>;
-			clock-frequency = <65000000>;
-		};
-	};
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -39,6 +31,7 @@
 			i-cache-sets = <512>;
 			i-cache-size = <32768>;
 			next-level-cache = <&l2>;
+			riscv,cbom-block-size = <32>;
 
 			cpu0_intc: interrupt-controller {
 				#address-cells = <0>;
@@ -64,6 +57,7 @@
 			i-cache-sets = <512>;
 			i-cache-size = <32768>;
 			next-level-cache = <&l2>;
+			riscv,cbom-block-size = <32>;
 
 			cpu1_intc: interrupt-controller {
 				#address-cells = <0>;
@@ -90,6 +84,7 @@
 			i-cache-sets = <512>;
 			i-cache-size = <32768>;
 			next-level-cache = <&l2>;
+			riscv,cbom-block-size = <32>;
 
 			cpu2_intc: interrupt-controller {
 				#address-cells = <0>;
@@ -116,6 +111,7 @@
 			i-cache-sets = <512>;
 			i-cache-size = <32768>;
 			next-level-cache = <&l2>;
+			riscv,cbom-block-size = <32>;
 
 			cpu3_intc: interrupt-controller {
 				#address-cells = <0>;
@@ -142,6 +138,7 @@
 			i-cache-sets = <512>;
 			i-cache-size = <32768>;
 			next-level-cache = <&l2>;
+			riscv,cbom-block-size = <32>;
 
 			cpu4_intc: interrupt-controller {
 				#address-cells = <0>;
@@ -168,6 +165,7 @@
 			i-cache-sets = <512>;
 			i-cache-size = <32768>;
 			next-level-cache = <&l2>;
+			riscv,cbom-block-size = <32>;
 
 			cpu5_intc: interrupt-controller {
 				#address-cells = <0>;
@@ -194,6 +192,7 @@
 			i-cache-sets = <512>;
 			i-cache-size = <32768>;
 			next-level-cache = <&l2>;
+			riscv,cbom-block-size = <32>;
 
 			cpu6_intc: interrupt-controller {
 				#address-cells = <0>;
@@ -220,6 +219,7 @@
 			i-cache-sets = <512>;
 			i-cache-size = <32768>;
 			next-level-cache = <&l2>;
+			riscv,cbom-block-size = <32>;
 
 			cpu7_intc: interrupt-controller {
 				#address-cells = <0>;
@@ -239,6 +239,14 @@
 		cache-sets = <2048>;
 		cache-block-size = <32>;
 		cache-level = <2>;
+	};
+
+	clocks {
+		sysclk: sys {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-frequency = <65000000>;
+		};
 	};
 
 	iccm {

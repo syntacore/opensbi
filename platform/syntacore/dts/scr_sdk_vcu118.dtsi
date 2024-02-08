@@ -23,6 +23,7 @@
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
+
 #if PLATFORM_RISCV_XLEN == 32
 		scr-dma@7f000000 {
 			reg = <0 0x7f000000 0 0x1000000>;
@@ -32,6 +33,11 @@
 #endif
 			compatible = "shared-dma-pool";
 			linux,dma-default;
+			no-map;
+		};
+
+		scr-opensbi@0 {
+			reg = <0x0 0x0 0x0 0x200000>;
 			no-map;
 		};
 	};

@@ -67,10 +67,10 @@ config PLATFORM_SYNTACORE_TEXT_START
 
 config PLATFORM_SYNTACORE_JUMP_ADDR
 	hex "fw_jump address"
-	default 0x200000
+	default 0x400000
 
 config PLATFORM_SYNTACORE_JUMP_FDT_ADDR
 	hex "fw_jump fdt address"
-	default 0x2200000
+	default 0x200000
 
 endif

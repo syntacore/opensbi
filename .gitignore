@@ -2,6 +2,7 @@
 *.o
 *.a
 *.dep
+*.swp
 
 #Build & install directories
 build/

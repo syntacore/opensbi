@@ -381,7 +381,7 @@ MERGEFLAGS	+=	-b elf$(PLATFORM_RISCV_XLEN)-littleriscv
 endif
 MERGEFLAGS	+=	-m elf$(PLATFORM_RISCV_XLEN)lriscv
 
-DTSCPPFLAGS	=	$(CPPFLAGS) -nostdinc -nostdlib -fno-builtin -D__DTS__ -x assembler-with-cpp
+DTSCPPFLAGS	=	$(CPPFLAGS) -nostdinc -nostdlib -fno-builtin -D__DTS__ -x assembler-with-cpp -U linux
 
 # Setup functions for compilation
 define dynamic_flags

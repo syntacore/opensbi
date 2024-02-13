@@ -20,7 +20,7 @@
 				<0 0 0 7 &xil_pcie_intc 7>;
 		interrupt-map-mask = <0 0 0 7>;
 		interrupt-parent = <&plic>;
-		interrupts = <4>;
+		interrupts = <4 4>;
 
 		bus-range = <0 255>;
 

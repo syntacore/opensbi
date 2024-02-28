@@ -28,10 +28,10 @@
 # define CSR_MMU_UPDATE_TPAGE	(3UL << 2)
 #endif
 
-#define PAGE_VALID		(1 << 0)
-#define PAGE_READ		(1 << 1)
-#define PAGE_WRITE		(1 << 2)
-#define PAGE_EXEC		(1 << 3)
+#define PAGE_VALID		(1UL << 0)
+#define PAGE_READ		(1UL << 1)
+#define PAGE_WRITE		(1UL << 2)
+#define PAGE_EXEC		(1UL << 3)
 #define PAGE_RWX		(PAGE_READ | PAGE_WRITE | PAGE_EXEC)
 
 #define PPN0_SHIFT		12

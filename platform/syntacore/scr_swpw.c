@@ -25,23 +25,23 @@ int scr_tlb_miss_trap_handler(struct sbi_trap_regs *regs)
 	pgd_t const* pgd = (pgd_t*)pte1_addr;
 	pte_t const* pte;
 
-	if (!(pgd->pgd & PAGE_VALID))
-		return SBI_EINVALID_ADDR;
+	/* Note: as per SCR5 EAS Appendix, for invalid page entry only
+	 * single PAGE_VALID non-zero bit is set in page attrs register
+	 */
 
 	/* 4M pages */
-	if (pgd->pgd & PAGE_RWX) {
-		csr_write(CSR_MMU_PATTR, pgd->pgd);
+	if((pgd->pgd & PAGE_RWX) || !(pgd->pgd & PAGE_VALID)) {
+		csr_write(CSR_MMU_PATTR,
+			  (pgd->pgd & PAGE_VALID) ? pgd->pgd : PAGE_VALID);
 		csr_write(CSR_MMU_UPDATE, CSR_MMU_UPDATE_MPAGE);
 		goto done;
 	}
 
 	pte = pgd_to_pte(pgd, pte0_offs / sizeof(pte_t));
 
-	if (!(pte->pte & PAGE_VALID))
-		return SBI_EINVALID_ADDR;
-
 	/* 4k pages */
-	csr_write(CSR_MMU_PATTR, pte->pte);
+	csr_write(CSR_MMU_PATTR,
+		  (pte->pte & PAGE_VALID) ? pte->pte : PAGE_VALID);
 	csr_write(CSR_MMU_UPDATE, CSR_MMU_UPDATE_4KPAGE);
 #else
 	/* sv39 mmu */
@@ -52,35 +52,33 @@ int scr_tlb_miss_trap_handler(struct sbi_trap_regs *regs)
 	pmd_t const* pmd;
 	pte_t const* pte;
 
-	if (!(pgd->pgd & PAGE_VALID))
-		return SBI_EINVALID_ADDR;
+	/* Note: as per SCR5 EAS Appendix, for invalid page entry only
+	 * single PAGE_VALID non-zero bit is set in page attrs register
+	 */
 
 	/* gigapages */
-	if (pgd->pgd & PAGE_RWX) {
-		csr_write(CSR_MMU_PATTR, pgd->pgd);
+	if((pgd->pgd & PAGE_RWX) || !(pgd->pgd & PAGE_VALID)) {
+		csr_write(CSR_MMU_PATTR,
+			  (pgd->pgd & PAGE_VALID) ? pgd->pgd : PAGE_VALID);
 		csr_write(CSR_MMU_UPDATE, CSR_MMU_UPDATE_GPAGE);
 		goto done;
 	}
 
 	pmd = pgd_to_pmd(pgd, pte1_offs/sizeof(*pgd));
 
-	if (!(pmd->pmd & PAGE_VALID))
-		return SBI_EINVALID_ADDR;
-
 	/* megapages */
-	if (pmd->pmd & PAGE_RWX) {
-		csr_write(CSR_MMU_PATTR, pmd->pmd);
+	if((pmd->pmd & PAGE_RWX) || !(pmd->pmd & PAGE_VALID)) {
+		csr_write(CSR_MMU_PATTR,
+			  (pmd->pmd & PAGE_VALID) ? pmd->pmd : PAGE_VALID);
 		csr_write(CSR_MMU_UPDATE, CSR_MMU_UPDATE_MPAGE);
 		goto done;
 	}
 
 	pte = pmd_to_pte(pmd, pte0_offs/sizeof(*pmd));
 
-	if (!(pte->pte & PAGE_VALID))
-		return SBI_EINVALID_ADDR;
-
 	/* 4k pages */
-	csr_write(CSR_MMU_PATTR, pte->pte);
+	csr_write(CSR_MMU_PATTR,
+		  (pte->pte & PAGE_VALID) ? pte->pte : PAGE_VALID);
 	csr_write(CSR_MMU_UPDATE, CSR_MMU_UPDATE_4KPAGE);
 #endif
 done:

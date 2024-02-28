@@ -22,6 +22,9 @@
 #include <sbi/sbi_pmu.h>
 #include <sbi/sbi_string.h>
 #include <sbi/sbi_trap.h>
+#ifdef CONFIG_PLATFORM_SYNTACORE_PMP
+#include "dt-bindings/scr_pmp.h"
+#endif
 
 extern void __sbi_expected_trap(void);
 extern void __sbi_expected_trap_hext(void);
@@ -310,7 +313,9 @@ int sbi_hart_pmp_configure(struct sbi_scratch *scratch)
 			pmp_flags |= PMP_X;
 		if (reg->flags & SBI_DOMAIN_MEMREGION_MMODE)
 			pmp_flags |= PMP_L;
-
+#ifdef CONFIG_PLATFORM_SYNTACORE_PMP
+		pmp_flags |= (reg->flags & SCR_PMP_PMA_MASK);
+#endif
 		pmp_addr =  reg->base >> PMP_SHIFT;
 		if (pmp_gran_log2 <= reg->order && pmp_addr < pmp_addr_max)
 			pmp_set(pmp_idx++, pmp_flags, reg->base, reg->order);
@@ -320,6 +325,10 @@ int sbi_hart_pmp_configure(struct sbi_scratch *scratch)
 				    reg->base, reg->order);
 		}
 	}
+
+#ifdef CONFIG_PLATFORM_SYNTACORE_PMP
+	csr_write(CSR_PMPCFG2, csr_read(CSR_PMPCFG2) & (~EARLY_PMP_DRAM_MASK));
+#endif
 
 	return 0;
 }

@@ -19,6 +19,10 @@
 #include <sbi/sbi_scratch.h>
 #include <sbi_utils/fdt/fdt_helper.h>
 
+#if !defined(CONFIG_PLATFORM_SYNTACORE_MPU)
+#error "Please check MPU/PMP definitions."
+#else
+
 static void scr_mpu_region_update(unsigned int regn,
 				  unsigned long base,
 				  unsigned long size,
@@ -180,3 +184,4 @@ void scr_hart_early_mpu_configure()
 		RISCV_FENCE_I;
 	}
 }
+#endif

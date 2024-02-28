@@ -49,6 +49,14 @@ config PLATFORM_SYNTACORE_L2_CACHE
 	bool "Enable L2$"
 	default y
 
+config PLATFORM_SYNTACORE_PMP
+	bool "Enable PMP instead of MPU"
+	default n
+
+config PLATFORM_SYNTACORE_MPU
+	bool "Enable MPU instead of PMP"
+	depends on !PLATFORM_SYNTACORE_PMP
+
 config PLATFORM_SYNTACORE_BUNDLED_FDT
 	bool "Bundle the FDT file into OpenSBI firmware"
 	default n

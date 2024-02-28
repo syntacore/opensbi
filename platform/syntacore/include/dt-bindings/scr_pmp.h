@@ -1,0 +1,51 @@
+/*
+ * SPDX-License-Identifier: BSD-2-Clause
+ *
+ * Copyright (c) 2024 YADRO
+ *
+ */
+#ifndef _DT_BINDINGS_PMP_SYNTACORE_SCR_H
+#define _DT_BINDINGS_PMP_SYNTACORE_SCR_H
+
+#include <sbi/riscv_encoding.h>
+
+// PMA bits: memory type
+#define SCR_PMP_PMA_SHIFT		5
+#define SCR_PMP_CACHE_WEAK_ORDER	(0UL << SCR_PMP_PMA_SHIFT)
+#define SCR_PMP_NOCACHE_STRONG_ORDER	(1UL << SCR_PMP_PMA_SHIFT)
+#define SCR_PMP_NOCACHE_WEAK_ORDER	(2UL << SCR_PMP_PMA_SHIFT)
+#define SCR_PMP_MMIO			(3UL << SCR_PMP_PMA_SHIFT)
+#define SCR_PMP_PMA_MASK		(3UL << SCR_PMP_PMA_SHIFT)
+
+#define SCR_PMP_READ			PMP_R
+#define SCR_PMP_WRITE			PMP_W
+#define SCR_PMP_EXECUTE			PMP_X
+
+// Access types
+#define SCR_PMP_RW                      (SCR_PMP_READ | SCR_PMP_WRITE)
+#define SCR_PMP_WX                      (SCR_PMP_WRITE | SCR_PMP_EXECUTE)
+#define SCR_PMP_RWX                     (SCR_PMP_READ | SCR_PMP_WRITE | SCR_PMP_EXECUTE)
+
+/* Early init PMP */
+#define EARLY_PMP_MCFG_REG		14
+#define EARLY_PMP_DRAM_REG		15
+#define EARLY_PMP_MCFG_OFFSET ((EARLY_PMP_MCFG_REG % 8) * 8)
+#define EARLY_PMP_DRAM_OFFSET ((EARLY_PMP_DRAM_REG % 8) * 8)
+#define EARLY_PMP_MCFG_MASK ((unsigned long)0xff << EARLY_PMP_MCFG_OFFSET)
+#define EARLY_PMP_DRAM_MASK ((unsigned long)0xff << EARLY_PMP_DRAM_OFFSET)
+#define PMP_EARLY_REG_MASK ( EARLY_PMP_MCFG_MASK | EARLY_PMP_DRAM_MASK)
+
+#define SCR_DRAM_BASE			0x0
+#if PLATFORM_RISCV_XLEN == 32
+#define SCR_DRAM_SIZE			0x7f000000
+#define SCR_DRAM_ORDER			31
+#else
+#define SCR_DRAM_SIZE			0xff000000
+#define SCR_DRAM_ORDER			32
+#endif
+
+#define SCR_MCFG_BASE			0xfffffff0040000
+#define SCR_MCFG_SIZE			0x2000
+#define SCR_MCFG_ORDER			13
+
+#endif // _DT_BINDINGS_PMP_SYNTACORE_SCR_H

@@ -13,6 +13,7 @@
 
 #include <libfdt.h>
 #include <sbi/riscv_io.h>
+#include <sbi/riscv_encoding.h>
 #include <sbi/riscv_asm.h>
 #include <sbi/sbi_hartmask.h>
 #include <sbi/sbi_platform.h>
@@ -36,7 +37,12 @@
 #include <sbi_utils/timer/aclint_mtimer.h>
 
 #include "platform.h"
+#ifdef CONFIG_PLATFORM_SYNTACORE_MPU
 #include "scr_mpu.h"
+#endif
+#ifdef CONFIG_PLATFORM_SYNTACORE_PMP
+#include "dt-bindings/scr_pmp.h"
+#endif
 #include "scr_cache.h"
 #include "scr_mtimer.h"
 #include "scr_iccm.h"
@@ -151,8 +157,18 @@ static struct sbi_system_reset_device scr_reset = {
 
 static int scr_nascent_init()
 {
+#ifdef CONFIG_PLATFORM_SYNTACORE_MPU
 	scr_hart_early_mpu_configure();
-
+#endif
+#ifdef CONFIG_PLATFORM_SYNTACORE_PMP
+	pmp_set(EARLY_PMP_MCFG_REG, SCR_PMP_MMIO,
+		SCR_MCFG_BASE, SCR_MCFG_ORDER);
+	pmp_set(EARLY_PMP_DRAM_REG, PMP_R | PMP_W | PMP_X,
+		SCR_DRAM_BASE, SCR_DRAM_ORDER);
+	csr_write(CSR_PMPCFG0, 0);
+	csr_write(CSR_PMPCFG2, csr_read(CSR_PMPCFG2) & PMP_EARLY_REG_MASK);
+	RISCV_FENCE_I;
+#endif
 	scr_cache_l1_disable();
 #ifdef CONFIG_PLATFORM_SYNTACORE_L1_CACHE
 	scr_cache_l1_enable();
@@ -218,10 +234,12 @@ static int scr_final_init(bool cold_boot)
 		scr_print_l2cache_info();
 	}
 
+#ifdef CONFIG_PLATFORM_SYNTACORE_MPU
 	scr_hart_mpu_configure(fdt);
 
 	if (cold_boot)
 		scr_mpu_print_info();
+#endif
 
 #if (defined(CONFIG_PLATFORM_SYNTACORE_SCR7) || defined (CONFIG_PLATFORM_SYNTACORE_SCR9)) && \
     defined(CONFIG_PLATFORM_SYNTACORE_SWPW)
@@ -240,6 +258,7 @@ static int scr_domains_init(void)
 
 static int scr_ipi_init(bool cold_boot)
 {
+#if (CONFIG_PLATFORM_SYNTACORE_NR_CPUS > 1)
 	int rc;
 
 	if (cold_boot) {
@@ -249,7 +268,7 @@ static int scr_ipi_init(bool cold_boot)
 	}
 
 	scr_iccm_warm_init();
-
+#endif
 	return 0;
 }
 

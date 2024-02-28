@@ -11,7 +11,10 @@ platform-cflags-y =
 platform-asflags-y =
 platform-ldflags-y =
 
-platform-objs-y += platform.o scr_mtimer.o scr_mpu.o scr_cache.o scr_iccm.o scr_plic.o scr_l2_pmu.o
+ifeq ($(CONFIG_PLATFORM_SYNTACORE_MPU), y)
+platform-objs-y += scr_mpu.o
+endif
+platform-objs-y += platform.o scr_mtimer.o scr_cache.o scr_iccm.o scr_plic.o scr_l2_pmu.o
 platform-objs-$(CONFIG_PLATFORM_SYNTACORE_SWPW) += scr_swpw.o
 ifeq ($(CONFIG_PLATFORM_SYNTACORE_BUNDLED_FDT), y)
 platform-objs-y += dts/$(subst ",,$(CONFIG_PLATFORM_SYNTACORE_BUNDLED_FDT_NAME)).o
@@ -55,10 +58,18 @@ ifeq ($(CONFIG_PLATFORM_SYNTACORE_SCR5), y)
 qemu_machine = scr5
 endif
 ifeq ($(CONFIG_PLATFORM_SYNTACORE_SCR7), y)
+ifeq ($(CONFIG_PLATFORM_SYNTACORE_MPU), y)
 qemu_machine = scr7_l2_mpu
+else
+qemu_machine = scr7_l2
+endif
 endif
 ifeq ($(CONFIG_PLATFORM_SYNTACORE_SCR9), y)
+ifeq ($(CONFIG_PLATFORM_SYNTACORE_MPU), y)
 qemu_machine = scr9_l2_mpu
+else
+qemu_machine = scr9_l2
+endif
 endif
 
 platform-runcmd = qemu-system-riscv$(PLATFORM_RISCV_XLEN) \

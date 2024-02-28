@@ -79,6 +79,7 @@
 			interrupt-parent = <&plic>;
 			interrupts = <1 4>;
 			current-speed = <115200>;
+			clock-frequency = <65000000>;
 			clocks = <&sysclk>;
 		};
 

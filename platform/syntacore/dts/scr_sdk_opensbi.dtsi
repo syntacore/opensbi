@@ -2,7 +2,11 @@
  *  Copyright (C) 2022 Syntacore
  */
 
+#ifdef CONFIG_PLATFORM_SYNTACORE_PMP
+#include "../include/dt-bindings/scr_pmp.h"
+#else
 #include "../include/dt-bindings/scr_mpu.h"
+#endif
 
 / {
 	chosen {
@@ -86,6 +90,15 @@
 					&cpu7
 #endif
 					>;
+#ifdef CONFIG_PLATFORM_SYNTACORE_PMP
+				regions =
+					<&mmio_reg (SCR_PMP_NOCACHE_STRONG_ORDER | SCR_PMP_RW)>,
+					<&plic_reg (SCR_PMP_NOCACHE_STRONG_ORDER | SCR_PMP_RW)>,
+					<&pci_cfg  (SCR_PMP_NOCACHE_STRONG_ORDER | SCR_PMP_RW)>,
+					<&pci_io   (SCR_PMP_NOCACHE_STRONG_ORDER | SCR_PMP_RW)>,
+					<&dma_mem  (SCR_PMP_NOCACHE_STRONG_ORDER | SCR_PMP_RW)>,
+					<&allmem   (SCR_PMP_CACHE_WEAK_ORDER | SCR_PMP_RWX)>;
+#else
 				regions =
 					<&mcfg_reg (SCR_MPU_MMIO | SCR_MPU_NOCACHE_STRONG_ORDER | SCR_MPU_DEFINED_FLAGS | SCR_MPU_MMODE_RW)>,
 					<&mmio_reg (SCR_MPU_NOCACHE_STRONG_ORDER | SCR_MPU_DEFINED_FLAGS | SCR_MPU_MMODE_RW | SCR_MPU_SMODE_RW)>,
@@ -94,6 +107,7 @@
 					<&pci_io   (SCR_MPU_NOCACHE_STRONG_ORDER | SCR_MPU_DEFINED_FLAGS | SCR_MPU_MMODE_RW | SCR_MPU_SMODE_RW)>,
 					<&dma_mem  (SCR_MPU_NOCACHE_STRONG_ORDER | SCR_MPU_DEFINED_FLAGS | SCR_MPU_MMODE_RW | SCR_MPU_SMODE_RW)>,
 					<&allmem   (SCR_MPU_DEFINED_FLAGS | SCR_MPU_MODE_ALL)>;
+#endif
 				boot-hart = <&cpu0>;
 				/* 0 = U, 1 = S, 3 = M */
 				next-mode = <0x1>;

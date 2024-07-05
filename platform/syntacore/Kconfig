@@ -20,6 +20,22 @@ config PLATFORM_SYNTACORE_NR_CPUS
 	int "Number of HARTs"
 	default 4
 
+config PLATFORM_SYNTACORE_CLOCK_FREQUENCY
+	int "Platform clock frequency, Hz"
+	default 65000000
+
+config PLATFORM_SYNTACORE_DRAM_SIZE
+	hex "Platform DRAM size in bytes, 64 bits"
+	default 0xff000000
+
+config PLATFORM_SYNTACORE_DRAM_ORDER
+	int "Platform DRAM order (power of 2 in size)"
+	default 32
+
+config PLATFORM_SYNTACORE_DMA_ORDER
+	int "Platform DMA order (power of 2 in size), DMA size calculates from it"
+	default 24
+
 config PLATFORM_SYNTACORE_SCR5
 	bool "Syntacore SCR5 cores support"
 	default n
@@ -35,6 +51,10 @@ config PLATFORM_SYNTACORE_SCR9
 
 config PLATFORM_SYNTACORE_SDK_VCU118
 	bool "Syntacore VCU118 EVK"
+	default n
+
+config PLATFORM_SYNTACORE_SDK_HTG960
+	bool "Syntacore HTG960 EVK"
 	default n
 
 config PLATFORM_SYNTACORE_SWPW

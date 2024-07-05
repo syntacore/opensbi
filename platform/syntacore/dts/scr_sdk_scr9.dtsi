@@ -21,10 +21,10 @@
 			clocks = <&sysclk>;
 			d-cache-block-size = <16>;
 			d-cache-sets = <512>;
-			d-cache-size = <32768>;
+			d-cache-size = <65536>;
 			i-cache-block-size = <16>;
 			i-cache-sets = <512>;
-			i-cache-size = <32768>;
+			i-cache-size = <65536>;
 			next-level-cache = <&l2>;
 			riscv,cbom-block-size = <32>;
 
@@ -47,10 +47,10 @@
 			clocks = <&sysclk>;
 			d-cache-block-size = <16>;
 			d-cache-sets = <512>;
-			d-cache-size = <32768>;
+			d-cache-size = <65536>;
 			i-cache-block-size = <16>;
 			i-cache-sets = <512>;
-			i-cache-size = <32768>;
+			i-cache-size = <65536>;
 			next-level-cache = <&l2>;
 			riscv,cbom-block-size = <32>;
 
@@ -74,10 +74,10 @@
 			clocks = <&sysclk>;
 			d-cache-block-size = <16>;
 			d-cache-sets = <512>;
-			d-cache-size = <32768>;
+			d-cache-size = <65536>;
 			i-cache-block-size = <16>;
 			i-cache-sets = <512>;
-			i-cache-size = <32768>;
+			i-cache-size = <65536>;
 			next-level-cache = <&l2>;
 			riscv,cbom-block-size = <32>;
 
@@ -101,10 +101,10 @@
 			clocks = <&sysclk>;
 			d-cache-block-size = <16>;
 			d-cache-sets = <512>;
-			d-cache-size = <32768>;
+			d-cache-size = <65536>;
 			i-cache-block-size = <16>;
 			i-cache-sets = <512>;
-			i-cache-size = <32768>;
+			i-cache-size = <65536>;
 			next-level-cache = <&l2>;
 			riscv,cbom-block-size = <32>;
 
@@ -128,10 +128,10 @@
 			clocks = <&sysclk>;
 			d-cache-block-size = <16>;
 			d-cache-sets = <512>;
-			d-cache-size = <32768>;
+			d-cache-size = <65536>;
 			i-cache-block-size = <16>;
 			i-cache-sets = <512>;
-			i-cache-size = <32768>;
+			i-cache-size = <65536>;
 			next-level-cache = <&l2>;
 			riscv,cbom-block-size = <32>;
 
@@ -155,10 +155,10 @@
 			clocks = <&sysclk>;
 			d-cache-block-size = <16>;
 			d-cache-sets = <512>;
-			d-cache-size = <32768>;
+			d-cache-size = <65536>;
 			i-cache-block-size = <16>;
 			i-cache-sets = <512>;
-			i-cache-size = <32768>;
+			i-cache-size = <65536>;
 			next-level-cache = <&l2>;
 			riscv,cbom-block-size = <32>;
 
@@ -182,10 +182,10 @@
 			clocks = <&sysclk>;
 			d-cache-block-size = <16>;
 			d-cache-sets = <512>;
-			d-cache-size = <32768>;
+			d-cache-size = <65536>;
 			i-cache-block-size = <16>;
 			i-cache-sets = <512>;
-			i-cache-size = <32768>;
+			i-cache-size = <65536>;
 			next-level-cache = <&l2>;
 			riscv,cbom-block-size = <32>;
 
@@ -209,10 +209,10 @@
 			clocks = <&sysclk>;
 			d-cache-block-size = <16>;
 			d-cache-sets = <512>;
-			d-cache-size = <32768>;
+			d-cache-size = <65536>;
 			i-cache-block-size = <16>;
 			i-cache-sets = <512>;
-			i-cache-size = <32768>;
+			i-cache-size = <65536>;
 			next-level-cache = <&l2>;
 			riscv,cbom-block-size = <32>;
 
@@ -230,9 +230,9 @@
 		compatible = "syntacore,l2-cache", "cache";
 		reg = <0xffffff 0xf0041000 0x0 0x1000>;
 		cache-unified;
-		cache-size = <0x80000>; // 512 KB
-		cache-sets = <2048>;
-		cache-block-size = <32>;
+		cache-size = <0x200000>; // 2 MB
+		cache-sets = <4096>;
+		cache-block-size = <64>;
 		cache-level = <2>;
 	};
 
@@ -240,7 +240,7 @@
 		sysclk: sys {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
-			clock-frequency = <65000000>;
+			clock-frequency = <CONFIG_PLATFORM_SYNTACORE_CLOCK_FREQUENCY>;
 		};
 	};
 

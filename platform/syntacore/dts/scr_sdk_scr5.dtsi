@@ -245,7 +245,7 @@
 		sysclk: sys {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
-			clock-frequency = <65000000>;
+			clock-frequency = <CONFIG_PLATFORM_SYNTACORE_CLOCK_FREQUENCY>;
 		};
 	};
 

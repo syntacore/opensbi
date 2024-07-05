@@ -1,0 +1,25 @@
+/*
+ *  Copyright (C) 2016-2022 Syntacore
+ */
+
+/dts-v1/;
+
+#include "scr_sdk_scr7.dtsi"
+#include "scr_sdk_riscv_plic.dtsi"
+#include "scr_sdk_pmu.dtsi"
+#include "scr_sdk_htg960.dtsi"
+#include "scr_sdk_opensbi.dtsi"
+
+/ {
+	model = "Syntacore SCR7 SDK board";
+	compatible = "syntacore,scr_sdk";
+
+	aliases {
+		serial0 = &uart;
+	};
+
+	chosen {
+		bootargs = "earlycon=sbi console=ttyS0,115200";
+		stdout-path = "serial0";
+	};
+};

@@ -2,6 +2,7 @@
  *  Copyright (C) 2022 Syntacore
  */
 
+#include "scr_sdk_convert.h"
 #ifdef CONFIG_PLATFORM_SYNTACORE_PMP
 #include "../include/dt-bindings/scr_pmp.h"
 #else
@@ -16,11 +17,7 @@
 			allmem: allmem {
 				compatible = "opensbi,domain,memregion";
 				base = <0x0 0x0>;
-#if PLATFORM_RISCV_XLEN == 32
-				order = <31>;
-#else
-				order = <32>;
-#endif
+				order = <CONFIG_PLATFORM_SYNTACORE_DRAM_ORDER>;
 			};
 
 			mcfg_reg: mcfg_reg {
@@ -43,13 +40,8 @@
 
 			dma_mem: dma_mem {
 				compatible = "opensbi,domain,memregion";
-#if PLATFORM_RISCV_XLEN == 32
-				base = <0x0 0x7f000000>;
-				order = <24>;
-#else
-				base = <0x0 0xff000000>;
-				order = <24>;
-#endif
+				base = <PLATFORM_SYNTACORE_DRAM_SIZE_HIGH PLATFORM_SYNTACORE_DRAM_SIZE_LOW>;
+				order = <CONFIG_PLATFORM_SYNTACORE_DMA_ORDER>;
 			};
 
 			pci_io: pci_io {

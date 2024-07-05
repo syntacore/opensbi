@@ -22,7 +22,7 @@
 		#size-cells = <2>;
 		ranges;
 
-		scr-dma@ff000000 {
+		scr-dma@1fc000000 {
 			reg = <PLATFORM_SYNTACORE_DRAM_SIZE_HIGH PLATFORM_SYNTACORE_DRAM_SIZE_LOW 0 PLATFORM_SYNTACORE_DMA_SIZE>;
 			compatible = "shared-dma-pool";
 			linux,dma-default;
@@ -86,42 +86,24 @@
 
 			reg = <0 0x40000 0 0x40000>;
 
-			phy-handle = <&phy3>;
-#if CONFIG_PLATFORM_SYNTACORE_SCR5
-			pcs-handle = <&phy0>;
-#else
-			pcs-handle = <&phy4>;
-#endif
+			phy-handle = <&phyc>;
+			phy-mode = "rgmii-id";
 
-			phy-mode = "sgmii";
-
-			xlnx,rxcsum = <0x2>;
 			xlnx,rxmem = <0x1000>;
+			xlnx,rxcsum = <0x2>;
 			xlnx,txcsum = <0x2>;
-
-			managed = "in-band-status";
 
 			mdio {
 				#address-cells = <1>;
 				#size-cells = <0>;
-				phy3: phy@3 {
+
+				phyc: phy@c {
 					compatible = "ethernet-phy-ieee802.3-c22";
-					reg = <3>;
+					reg = <0xc>;
+					ti,rx-internal-delay = <0x7>;
+					ti,tx-internal-delay = <0x7>;
 					ti,fifo-depth = <0x3>;
-					ti,dp83867-rxctrl-strap-quirk = <1>;
-					ti,sgmii-ref-clock-output-enable = <1>;
 				};
-#if CONFIG_PLATFORM_SYNTACORE_SCR5
-				phy0: phy@0 {
-					compatible = "ethernet-phy-id0174.0c00";
-					reg = <0>;
-				};
-#else
-				phy4: phy@4 {
-					compatible = "ethernet-phy-id0174.0c00";
-					reg = <4>;
-				};
-#endif
 			};
 		};
 

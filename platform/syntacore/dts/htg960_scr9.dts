@@ -7,7 +7,7 @@
 #include "scr_sdk_scr9.dtsi"
 #include "scr_sdk_riscv_plic.dtsi"
 #include "scr_sdk_pmu.dtsi"
-#include "scr_sdk_vcu118.dtsi"
+#include "scr_sdk_htg960.dtsi"
 #include "scr_sdk_opensbi.dtsi"
 
 / {

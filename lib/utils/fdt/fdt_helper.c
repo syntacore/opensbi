@@ -859,7 +859,7 @@ int fdt_parse_imsic_node(const void *fdt, int nodeoff, struct imsic_data *imsic)
 
 		rc = fdt_get_node_addr_size(fdt, nodeoff, i,
 					    &reg_addr, &reg_size);
-		if (rc < 0 || !reg_addr || !reg_size)
+		if (rc < 0 || !reg_size)
 			break;
 		regs->addr = reg_addr;
 		regs->size = reg_size;

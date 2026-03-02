@@ -1,0 +1,148 @@
+/*
+ * Copyright (C) 2024, Syntacore Ltd.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     1. Redistributions of source code must retain the above copyright notice,
+ *        this list of conditions and the following disclaimer.
+ *     2. Redistributions in binary form must reproduce the above copyright
+ *        notice, this list of conditions and the following disclaimer in the
+ *        documentation and/or other materials provided with the distribution.
+ *     3. Neither the name of the copyright holder nor the names of its
+ *        contributors may be used to endorse or promote products derived from
+ *        this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+#ifndef __SBI_DOMAIN_MEMREGION_H__
+#define __SBI_DOMAIN_MEMREGION_H__
+
+/** Flags representing memory region attributes */
+#define SBI_DOMAIN_MEMREGION_M_READABLE		(1UL << 0)
+#define SBI_DOMAIN_MEMREGION_M_WRITABLE		(1UL << 1)
+#define SBI_DOMAIN_MEMREGION_M_EXECUTABLE	(1UL << 2)
+#define SBI_DOMAIN_MEMREGION_SU_READABLE	(1UL << 3)
+#define SBI_DOMAIN_MEMREGION_SU_WRITABLE	(1UL << 4)
+#define SBI_DOMAIN_MEMREGION_SU_EXECUTABLE	(1UL << 5)
+#define SBI_DOMAIN_MEMREGION_ACCESS_MASK	(0x3fUL)
+#define SBI_DOMAIN_MEMREGION_M_ACCESS_MASK	(0x7UL)
+#define SBI_DOMAIN_MEMREGION_SU_ACCESS_MASK	(0x38UL)
+
+#define SBI_DOMAIN_MEMREGION_SU_ACCESS_SHIFT	(3)
+
+#define SBI_DOMAIN_MEMREGION_SHARED_RDONLY		\
+		(SBI_DOMAIN_MEMREGION_M_READABLE |	\
+		 SBI_DOMAIN_MEMREGION_SU_READABLE)
+
+#define SBI_DOMAIN_MEMREGION_SHARED_SUX_MRX		\
+		(SBI_DOMAIN_MEMREGION_M_READABLE   |	\
+		 SBI_DOMAIN_MEMREGION_M_EXECUTABLE |	\
+		 SBI_DOMAIN_MEMREGION_SU_EXECUTABLE)
+
+#define SBI_DOMAIN_MEMREGION_SHARED_SUX_MX		\
+		(SBI_DOMAIN_MEMREGION_M_EXECUTABLE |	\
+		 SBI_DOMAIN_MEMREGION_SU_EXECUTABLE)
+
+#define SBI_DOMAIN_MEMREGION_SHARED_SURW_MRW		\
+		(SBI_DOMAIN_MEMREGION_M_READABLE |	\
+		 SBI_DOMAIN_MEMREGION_M_WRITABLE |	\
+		 SBI_DOMAIN_MEMREGION_SU_READABLE|	\
+		 SBI_DOMAIN_MEMREGION_SU_WRITABLE)
+
+#define SBI_DOMAIN_MEMREGION_SHARED_SUR_MRW		\
+		(SBI_DOMAIN_MEMREGION_M_READABLE |	\
+		 SBI_DOMAIN_MEMREGION_M_WRITABLE |	\
+		 SBI_DOMAIN_MEMREGION_SU_READABLE)
+
+	/* Shared read-only region between M and SU mode */
+#define SBI_DOMAIN_MEMREGION_IS_SUR_MR(__flags)			 \
+		((__flags & SBI_DOMAIN_MEMREGION_ACCESS_MASK) == \
+		 SBI_DOMAIN_MEMREGION_SHARED_RDONLY)
+
+	/* Shared region: SU execute-only and M read/execute */
+#define SBI_DOMAIN_MEMREGION_IS_SUX_MRX(__flags)		 \
+		((__flags & SBI_DOMAIN_MEMREGION_ACCESS_MASK) == \
+		 SBI_DOMAIN_MEMREGION_SHARED_SUX_MRX)
+
+	/* Shared region: SU and M execute-only */
+#define SBI_DOMAIN_MEMREGION_IS_SUX_MX(__flags)			 \
+		((__flags & SBI_DOMAIN_MEMREGION_ACCESS_MASK) == \
+		 SBI_DOMAIN_MEMREGION_SHARED_SUX_MX)
+
+	/* Shared region: SU and M read/write */
+#define SBI_DOMAIN_MEMREGION_IS_SURW_MRW(__flags)		 \
+		((__flags & SBI_DOMAIN_MEMREGION_ACCESS_MASK) == \
+		 SBI_DOMAIN_MEMREGION_SHARED_SURW_MRW)
+
+	/* Shared region: SU read-only and M read/write */
+#define SBI_DOMAIN_MEMREGION_IS_SUR_MRW(__flags)		 \
+		((__flags & SBI_DOMAIN_MEMREGION_ACCESS_MASK) == \
+		 SBI_DOMAIN_MEMREGION_SHARED_SUR_MRW)
+
+	/*
+	 * Check if region flags match with any of the above
+	 * mentioned shared region type
+	 */
+#define SBI_DOMAIN_MEMREGION_IS_SHARED(_flags)			\
+		(SBI_DOMAIN_MEMREGION_IS_SUR_MR(_flags)  ||	\
+		 SBI_DOMAIN_MEMREGION_IS_SUX_MRX(_flags) ||	\
+		 SBI_DOMAIN_MEMREGION_IS_SUX_MX(_flags)  ||	\
+		 SBI_DOMAIN_MEMREGION_IS_SURW_MRW(_flags)||	\
+		 SBI_DOMAIN_MEMREGION_IS_SUR_MRW(_flags))
+
+#define SBI_DOMAIN_MEMREGION_M_ONLY_ACCESS(__flags)			\
+		((__flags & SBI_DOMAIN_MEMREGION_M_ACCESS_MASK) &&	\
+		 !(__flags & SBI_DOMAIN_MEMREGION_SU_ACCESS_MASK))
+
+#define SBI_DOMAIN_MEMREGION_SU_ONLY_ACCESS(__flags)			\
+		((__flags & SBI_DOMAIN_MEMREGION_SU_ACCESS_MASK)  &&	\
+		 !(__flags & SBI_DOMAIN_MEMREGION_M_ACCESS_MASK))
+
+/** Bit to control if permissions are enforced on all modes */
+#define SBI_DOMAIN_MEMREGION_ENF_PERMISSIONS	(1UL << 6)
+
+#define SBI_DOMAIN_MEMREGION_M_RWX		\
+				(SBI_DOMAIN_MEMREGION_M_READABLE | \
+				 SBI_DOMAIN_MEMREGION_M_WRITABLE | \
+				 SBI_DOMAIN_MEMREGION_M_EXECUTABLE)
+
+#define SBI_DOMAIN_MEMREGION_SU_RWX		\
+				(SBI_DOMAIN_MEMREGION_SU_READABLE | \
+				 SBI_DOMAIN_MEMREGION_SU_WRITABLE | \
+				 SBI_DOMAIN_MEMREGION_SU_EXECUTABLE)
+
+/* Unrestricted M-mode accesses but enfoced on SU-mode */
+#define SBI_DOMAIN_MEMREGION_READABLE		\
+				(SBI_DOMAIN_MEMREGION_SU_READABLE | \
+				 SBI_DOMAIN_MEMREGION_M_RWX)
+#define SBI_DOMAIN_MEMREGION_WRITEABLE		\
+				(SBI_DOMAIN_MEMREGION_SU_WRITABLE | \
+				 SBI_DOMAIN_MEMREGION_M_RWX)
+#define SBI_DOMAIN_MEMREGION_EXECUTABLE		\
+				(SBI_DOMAIN_MEMREGION_SU_EXECUTABLE | \
+				 SBI_DOMAIN_MEMREGION_M_RWX)
+
+/* Enforced accesses across all modes */
+#define SBI_DOMAIN_MEMREGION_ENF_READABLE	\
+				(SBI_DOMAIN_MEMREGION_SU_READABLE | \
+				 SBI_DOMAIN_MEMREGION_M_READABLE)
+#define SBI_DOMAIN_MEMREGION_ENF_WRITABLE	\
+				(SBI_DOMAIN_MEMREGION_SU_WRITABLE | \
+				 SBI_DOMAIN_MEMREGION_M_WRITABLE)
+#define SBI_DOMAIN_MEMREGION_ENF_EXECUTABLE	\
+				(SBI_DOMAIN_MEMREGION_SU_EXECUTABLE | \
+				 SBI_DOMAIN_MEMREGION_M_EXECUTABLE)
+
+#define SBI_DOMAIN_MEMREGION_MMIO		(1UL << 31)
+
+#endif

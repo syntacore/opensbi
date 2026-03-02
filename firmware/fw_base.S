@@ -32,10 +32,7 @@
 .endm
 
 .macro CLEAR_MDT tmp
-#if __riscv_xlen == 32
-	li 	\tmp, MSTATUSH_MDT
-	csrc	CSR_MSTATUSH, \tmp
-#else
+#if __riscv_xlen > 32
 	li 	\tmp, MSTATUS_MDT
 	csrc	CSR_MSTATUS, \tmp
 #endif

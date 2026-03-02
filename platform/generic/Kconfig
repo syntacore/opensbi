@@ -62,6 +62,14 @@ config PLATFORM_STARFIVE_JH7110
 	bool "StarFive JH7110 support"
 	default n
 
+config PLATFORM_SYNTACORE
+	bool "Syntacore support"
+	select FDT_TIMER_SCR
+	select FDT_IPI_ICCM_MMIO
+	select FDT_IPI_ICCM
+	select FDT_PMU
+	default n
+
 config PLATFORM_THEAD
 	bool "THEAD C9xx support"
 	select THEAD_C9XX_ERRATA

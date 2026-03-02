@@ -24,6 +24,8 @@
 #include <sbi/sbi_trap.h>
 #include <sbi/sbi_hfence.h>
 
+#include <syntacore/dt-bindings/scr_pma.h>
+
 extern void __sbi_expected_trap(void);
 extern void __sbi_expected_trap_hext(void);
 
@@ -33,6 +35,8 @@ static unsigned long hart_features_offset;
 
 static void mstatus_init(struct sbi_scratch *scratch)
 {
+	struct sbi_trap_info traph = {0};
+	struct sbi_trap_info trap = {0};
 	int cidx;
 	unsigned long mstatus_val = 0;
 	unsigned int mhpm_mask = sbi_hart_mhpm_mask(scratch);
@@ -111,23 +115,62 @@ static void mstatus_init(struct sbi_scratch *scratch)
 			mstateen_val &= ~SMSTATEEN0_CTR;
 
 		csr_write64(CSR_MSTATEEN0, mstateen_val);
-		csr_write64(CSR_MSTATEEN1, SMSTATEEN_STATEN);
-		csr_write64(CSR_MSTATEEN2, SMSTATEEN_STATEN);
-		csr_write64(CSR_MSTATEEN3, SMSTATEEN_STATEN);
+
+		csr_write64_allowed(CSR_MSTATEEN1, &trap, &traph, SMSTATEEN_STATEN);
+		if (trap.cause)
+			sbi_dprintf("%s: CSR_MSTATEEN1 not implemented\n", __func__);
+		if (traph.cause)
+			sbi_dprintf("%s: CSR_MSTATEEN1H not implemented\n", __func__);
+
+		csr_write64_allowed(CSR_MSTATEEN2, &trap, &traph, SMSTATEEN_STATEN);
+		if (trap.cause)
+			sbi_dprintf("%s: CSR_MSTATEEN2 not implemented\n", __func__);
+		if (traph.cause)
+			sbi_dprintf("%s: CSR_MSTATEEN2H not implemented\n", __func__);
+
+		csr_write64_allowed(CSR_MSTATEEN3, &trap, &traph, SMSTATEEN_STATEN);
+		if (trap.cause)
+			sbi_dprintf("%s: CSR_MSTATEEN3 not implemented\n", __func__);
+		if (traph.cause)
+			sbi_dprintf("%s: CSR_MSTATEEN3H not implemented\n", __func__);
 	}
 
 	if (sbi_hart_has_extension(scratch, SBI_HART_EXT_SSSTATEEN)) {
 		if (misa_extension('S')) {
 			csr_write(CSR_SSTATEEN0, 0);
-			csr_write(CSR_SSTATEEN1, 0);
-			csr_write(CSR_SSTATEEN2, 0);
-			csr_write(CSR_SSTATEEN3, 0);
+
+			csr_write_allowed(CSR_SSTATEEN1, &trap, 0);
+			if (trap.cause)
+				sbi_dprintf("%s: CSR_STATEEN1 not implemented\n", __func__);
+
+			csr_write_allowed(CSR_SSTATEEN2, &trap, 0);
+			if (trap.cause)
+				sbi_dprintf("%s: CSR_STATEEN2 not implemented\n", __func__);
+
+			csr_write_allowed(CSR_SSTATEEN3, &trap, 0);
+			if (trap.cause)
+				sbi_dprintf("%s: CSR_STATEEN3 not implemented\n", __func__);
 		}
 		if (misa_extension('H')) {
 			csr_write64(CSR_HSTATEEN0, (uint64_t)0);
-			csr_write64(CSR_HSTATEEN1, (uint64_t)0);
-			csr_write64(CSR_HSTATEEN2, (uint64_t)0);
-			csr_write64(CSR_HSTATEEN3, (uint64_t)0);
+
+			csr_write64_allowed(CSR_HSTATEEN1, &trap, &traph, (uint64_t)0);
+			if (trap.cause)
+				sbi_dprintf("%s: CSR_HSTATEEN1 not implemented\n", __func__);
+			if (traph.cause)
+				sbi_dprintf("%s: CSR_HSTATEEN1H not implemented\n", __func__);
+
+			csr_write64_allowed(CSR_HSTATEEN2, &trap, &traph, (uint64_t)0);
+			if (trap.cause)
+				sbi_dprintf("%s: CSR_HSTATEEN2 not implemented\n", __func__);
+			if (traph.cause)
+				sbi_dprintf("%s: CSR_HSTATEEN2H not implemented\n", __func__);
+
+			csr_write64_allowed(CSR_HSTATEEN3, &trap, &traph, (uint64_t)0);
+			if (trap.cause)
+				sbi_dprintf("%s: CSR_HSTATEEN3 not implemented\n", __func__);
+			if (traph.cause)
+				sbi_dprintf("%s: CSR_HSTATEEN3H not implemented\n", __func__);
 		}
 	}
 
@@ -360,6 +403,9 @@ static unsigned int sbi_hart_get_smepmp_flags(struct sbi_scratch *scratch,
 		if (reg->flags & SBI_DOMAIN_MEMREGION_SU_EXECUTABLE)
 			pmp_flags |= PMP_X;
 	}
+	if (reg->flags & SCR_PMA_FLAG)
+		pmp_flags |= ((reg->flags >> SCR_PMA_OFF) & SCR_PMA_MASK) << SCR_PMA_PMP_OFF;
+
 
 	return pmp_flags;
 }
@@ -454,6 +500,9 @@ static int sbi_hart_smepmp_configure(struct sbi_scratch *scratch,
 				    pmp_log2gran, pmp_addr_max);
 	}
 
+	for ( ; pmp_idx < pmp_count; pmp_idx++) {
+		pmp_disable(pmp_idx);
+	}
 	/*
 	 * All entries are programmed.
 	 * Keep the RLB bit so that dynamic mappings can be done.
@@ -493,6 +542,9 @@ static int sbi_hart_oldpmp_configure(struct sbi_scratch *scratch,
 		if (reg->flags & SBI_DOMAIN_MEMREGION_SU_EXECUTABLE)
 			pmp_flags |= PMP_X;
 
+		if (reg->flags & SCR_PMA_FLAG)
+			pmp_flags |= ((reg->flags >> SCR_PMA_OFF) & SCR_PMA_MASK) << SCR_PMA_PMP_OFF;
+
 		pmp_addr = reg->base >> PMP_SHIFT;
 		if (pmp_log2gran <= reg->order && pmp_addr < pmp_addr_max) {
 			sbi_platform_pmp_set(sbi_platform_ptr(scratch),
@@ -505,6 +557,10 @@ static int sbi_hart_oldpmp_configure(struct sbi_scratch *scratch,
 				   "is not in range.\n", dom->name, reg->base,
 				   reg->order);
 		}
+	}
+
+	for ( ; pmp_idx < pmp_count; pmp_idx++) {
+		pmp_disable(pmp_idx);
 	}
 
 	return 0;
@@ -715,6 +771,8 @@ const struct sbi_hart_ext_data sbi_hart_ext[] = {
 	__SBI_HART_EXT_DATA(smctr, SBI_HART_EXT_SMCTR),
 	__SBI_HART_EXT_DATA(ssctr, SBI_HART_EXT_SSCTR),
 	__SBI_HART_EXT_DATA(ssstateen, SBI_HART_EXT_SSSTATEEN),
+	__SBI_HART_EXT_DATA(zicond, SBI_HART_EXT_ZICOND),
+	__SBI_HART_EXT_DATA(xscswpw, SBI_HART_EXT_XSCSWPW),
 };
 
 _Static_assert(SBI_HART_EXT_MAX == array_size(sbi_hart_ext),
@@ -826,6 +884,7 @@ static int hart_detect_features(struct sbi_scratch *scratch)
 	struct sbi_trap_info trap = {0};
 	struct sbi_hart_features *hfeatures =
 		sbi_scratch_offset_ptr(scratch, hart_features_offset);
+
 	unsigned long val, oldval;
 	int rc;
 
@@ -862,10 +921,10 @@ static int hart_detect_features(struct sbi_scratch *scratch)
 	__check_hpm_csr_8(__csr + 0, __mask) 			  \
 	__check_hpm_csr_8(__csr + 8, __mask)
 
-#define __check_csr(__csr, __rdonly, __wrval, __field, __skip)		\
+#define __check_pmp_csr(__csr, __rdonly, __wrval, __field, __skip)	\
 	oldval = csr_read_allowed(__csr, &trap);			\
 	if (!trap.cause) {						\
-		if (__rdonly) {						\
+		if (__rdonly || is_pmp_entry_mapped(__csr - CSR_PMPADDR0)) { \
 			(hfeatures->__field)++;				\
 		} else {						\
 			csr_write_allowed(__csr, &trap, __wrval);	\
@@ -881,24 +940,24 @@ static int hart_detect_features(struct sbi_scratch *scratch)
 	} else {							\
 		goto __skip;						\
 	}
-#define __check_csr_2(__csr, __rdonly, __wrval, __field, __skip)	\
-	__check_csr(__csr + 0, __rdonly, __wrval, __field, __skip)	\
-	__check_csr(__csr + 1, __rdonly, __wrval, __field, __skip)
-#define __check_csr_4(__csr, __rdonly, __wrval, __field, __skip)	\
-	__check_csr_2(__csr + 0, __rdonly, __wrval, __field, __skip)	\
-	__check_csr_2(__csr + 2, __rdonly, __wrval, __field, __skip)
-#define __check_csr_8(__csr, __rdonly, __wrval, __field, __skip)	\
-	__check_csr_4(__csr + 0, __rdonly, __wrval, __field, __skip)	\
-	__check_csr_4(__csr + 4, __rdonly, __wrval, __field, __skip)
-#define __check_csr_16(__csr, __rdonly, __wrval, __field, __skip)	\
-	__check_csr_8(__csr + 0, __rdonly, __wrval, __field, __skip)	\
-	__check_csr_8(__csr + 8, __rdonly, __wrval, __field, __skip)
-#define __check_csr_32(__csr, __rdonly, __wrval, __field, __skip)	\
-	__check_csr_16(__csr + 0, __rdonly, __wrval, __field, __skip)	\
-	__check_csr_16(__csr + 16, __rdonly, __wrval, __field, __skip)
-#define __check_csr_64(__csr, __rdonly, __wrval, __field, __skip)	\
-	__check_csr_32(__csr + 0, __rdonly, __wrval, __field, __skip)	\
-	__check_csr_32(__csr + 32, __rdonly, __wrval, __field, __skip)
+#define __check_pmp_csr_2(__csr, __rdonly, __wrval, __field, __skip)		\
+	__check_pmp_csr(__csr + 0, __rdonly, __wrval, __field, __skip)		\
+	__check_pmp_csr(__csr + 1, __rdonly, __wrval, __field, __skip)
+#define __check_pmp_csr_4(__csr, __rdonly, __wrval, __field, __skip)		\
+	__check_pmp_csr_2(__csr + 0, __rdonly, __wrval, __field, __skip)	\
+	__check_pmp_csr_2(__csr + 2, __rdonly, __wrval, __field, __skip)
+#define __check_pmp_csr_8(__csr, __rdonly, __wrval, __field, __skip)		\
+	__check_pmp_csr_4(__csr + 0, __rdonly, __wrval, __field, __skip)	\
+	__check_pmp_csr_4(__csr + 4, __rdonly, __wrval, __field, __skip)
+#define __check_pmp_csr_16(__csr, __rdonly, __wrval, __field, __skip)		\
+	__check_pmp_csr_8(__csr + 0, __rdonly, __wrval, __field, __skip)	\
+	__check_pmp_csr_8(__csr + 8, __rdonly, __wrval, __field, __skip)
+#define __check_pmp_csr_32(__csr, __rdonly, __wrval, __field, __skip)		\
+	__check_pmp_csr_16(__csr + 0, __rdonly, __wrval, __field, __skip)	\
+	__check_pmp_csr_16(__csr + 16, __rdonly, __wrval, __field, __skip)
+#define __check_pmp_csr_64(__csr, __rdonly, __wrval, __field, __skip)		\
+	__check_pmp_csr_32(__csr + 0, __rdonly, __wrval, __field, __skip)	\
+	__check_pmp_csr_32(__csr + 32, __rdonly, __wrval, __field, __skip)
 
 	/**
 	 * Detect the allowed address bits & granularity. At least PMPADDR0
@@ -909,7 +968,7 @@ static int hart_detect_features(struct sbi_scratch *scratch)
 		hfeatures->pmp_log2gran = sbi_ffs(val) + 2;
 		hfeatures->pmp_addr_bits = sbi_fls(val) + 1;
 		/* Detect number of PMP regions. At least PMPADDR0 should be implemented*/
-		__check_csr_64(CSR_PMPADDR0, 0, val, pmp_count, __pmp_skip);
+		__check_pmp_csr_64(CSR_PMPADDR0, 0, val, pmp_count, __pmp_skip);
 	}
 __pmp_skip:
 	/* Detect number of MHPM counters */
@@ -923,13 +982,13 @@ __pmp_skip:
 	 * No need to check for MHPMCOUNTERH for RV32 as they are expected to be
 	 * implemented if MHPMCOUNTER is implemented.
 	 */
-#undef __check_csr_64
-#undef __check_csr_32
-#undef __check_csr_16
-#undef __check_csr_8
-#undef __check_csr_4
-#undef __check_csr_2
-#undef __check_csr
+#undef __check_pmp_csr_64
+#undef __check_pmp_csr_32
+#undef __check_pmp_csr_16
+#undef __check_pmp_csr_8
+#undef __check_pmp_csr_4
+#undef __check_pmp_csr_2
+#undef __check_pmp_csr
 
 
 #define __check_priv(__csr, __base_priv, __priv)			\

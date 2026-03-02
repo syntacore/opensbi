@@ -137,7 +137,8 @@ static inline void vsetvl(ulong vl, ulong vtype)
 			:: "r" (vl), "r" (vtype));
 }
 
-int sbi_misaligned_v_ld_emulator(int rlen, union sbi_ldst_data *out_val,
+int sbi_misaligned_v_ld_emulator(ulong addr, int rlen,
+				 union sbi_ldst_data *out_val,
 				 struct sbi_trap_context *tcntx)
 {
 	const struct sbi_trap_info *orig_trap = &tcntx->trap;
@@ -237,7 +238,7 @@ int sbi_misaligned_v_ld_emulator(int rlen, union sbi_ldst_data *out_val,
 	return vl;
 }
 
-int sbi_misaligned_v_st_emulator(int wlen, union sbi_ldst_data in_val,
+int sbi_misaligned_v_st_emulator(ulong addr, int wlen, union sbi_ldst_data in_val,
 				 struct sbi_trap_context *tcntx)
 {
 	const struct sbi_trap_info *orig_trap = &tcntx->trap;
@@ -331,12 +332,13 @@ int sbi_misaligned_v_st_emulator(int wlen, union sbi_ldst_data in_val,
 	return vl;
 }
 #else
-int sbi_misaligned_v_ld_emulator(int rlen, union sbi_ldst_data *out_val,
+int sbi_misaligned_v_ld_emulator(ulong addr, int rlen,
+				 union sbi_ldst_data *out_val,
 				 struct sbi_trap_context *tcntx)
 {
 	return 0;
 }
-int sbi_misaligned_v_st_emulator(int wlen, union sbi_ldst_data in_val,
+int sbi_misaligned_v_st_emulator(ulong addr,int wlen, union sbi_ldst_data in_val,
 				 struct sbi_trap_context *tcntx)
 {
 	return 0;

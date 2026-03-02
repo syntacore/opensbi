@@ -19,6 +19,11 @@ config FDT_TIMER_PLMT
 	select TIMER_PLMT
 	default n
 
+config FDT_TIMER_SCR
+	bool "Syntacore MTIMER FDT driver"
+	select TIMER_SCR
+	default y
+
 endif
 
 config TIMER_MTIMER
@@ -27,6 +32,10 @@ config TIMER_MTIMER
 
 config TIMER_PLMT
 	bool "Andes PLMT support"
+	default n
+
+config TIMER_SCR
+	bool "Syntacore MTIMER support"
 	default n
 
 endmenu

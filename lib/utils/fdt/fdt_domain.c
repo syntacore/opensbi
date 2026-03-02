@@ -18,6 +18,8 @@
 #include <sbi_utils/fdt/fdt_domain.h>
 #include <sbi_utils/fdt/fdt_helper.h>
 
+#include <syntacore/dt-bindings/scr_pma.h>
+
 int fdt_iterate_each_domain(void *fdt, void *opaque,
 			    int (*fn)(void *fdt, int domain_offset,
 				       void *opaque))
@@ -290,7 +292,8 @@ static int __fdt_parse_region(const void *fdt, int domain_offset,
 	order = val32;
 
 	flags = region_access & (SBI_DOMAIN_MEMREGION_ACCESS_MASK
-				| SBI_DOMAIN_MEMREGION_ENF_PERMISSIONS);
+				| SBI_DOMAIN_MEMREGION_ENF_PERMISSIONS
+				| SCR_PMA_BITMASK);
 
 	/* Read "mmio" DT property */
 	if (fdt_get_property(fdt, region_offset, "mmio", NULL))

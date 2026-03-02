@@ -46,6 +46,7 @@ RISC-V Platforms Using Generic Platform
 * **Shakti C-class SoC Platform** (*[shakti_cclass.md]*)
 * **SiFive HiFive Unleashed** (*[sifive_fu540.md]*)
 * **Spike** (*[spike.md]*)
+* **Syntacore** (*[syntacore.md]*)
 * **T-HEAD C9xx series Processors** (*[thead-c9xx.md]*)
 
 [andes-ae350.md]: andes-ae350.md
@@ -54,4 +55,5 @@ RISC-V Platforms Using Generic Platform
 [shakti_cclass.md]: shakti_cclass.md
 [sifive_fu540.md]: sifive_fu540.md
 [spike.md]: spike.md
+[syntacore.md]: syntacore.md
 [thead-c9xx.md]: thead-c9xx.md

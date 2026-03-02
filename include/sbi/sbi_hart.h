@@ -81,6 +81,10 @@ enum sbi_hart_extensions {
 	SBI_HART_EXT_SSCTR,
 	/** HART has Ssstateen extension **/
 	SBI_HART_EXT_SSSTATEEN,
+	/** Hart has Zicond extension */
+	SBI_HART_EXT_ZICOND,
+	/** Hart has Xscswpw extension */
+	SBI_HART_EXT_XSCSWPW,
 
 	/** Maximum index of Hart extension */
 	SBI_HART_EXT_MAX,

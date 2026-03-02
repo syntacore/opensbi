@@ -157,6 +157,8 @@
 #define PMP_A_TOR			_UL(0x08)
 #define PMP_A_NA4			_UL(0x10)
 #define PMP_A_NAPOT			_UL(0x18)
+#define PMP_SCR_PMA_NC			_UL(0x20)
+#define PMP_SCR_PMA_NC_MMCFG		_UL(0x60)
 #define PMP_L				_UL(0x80)
 
 #define PMP_SHIFT			2
@@ -799,6 +801,7 @@
 #define CAUSE_MACHINE_ECALL		0xb
 #define CAUSE_FETCH_PAGE_FAULT		0xc
 #define CAUSE_LOAD_PAGE_FAULT		0xd
+#define CAUSE_SYNTACORE_TLB_MISS	0xe
 #define CAUSE_STORE_PAGE_FAULT		0xf
 #define CAUSE_DOUBLE_TRAP		0x10
 #define CAUSE_SW_CHECK_EXCP		0x12
@@ -1352,6 +1355,8 @@
 #define RVC_RS1S(insn)			(8 + RV_X(insn, SH_RD, 3))
 #define RVC_RS2S(insn)			(8 + RV_X(insn, SH_RS2C, 3))
 #define RVC_RS2(insn)			RV_X(insn, SH_RS2C, 5)
+
+#define RVC_CH_IMM(x)			(RV_X(x, 5, 1) << 1)
 
 #define SHIFT_RIGHT(x, y)		\
 	((y) < 0 ? ((x) << -(y)) : ((x) >> (y)))

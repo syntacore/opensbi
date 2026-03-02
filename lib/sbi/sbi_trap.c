@@ -325,6 +325,18 @@ struct sbi_trap_context *sbi_trap_handler(struct sbi_trap_context *tcntx)
 	}
 
 	switch (mcause) {
+	case CAUSE_SYNTACORE_TLB_MISS:
+		if (sbi_hart_has_extension(sbi_scratch_thishart_ptr(),
+					   SBI_HART_EXT_XSCSWPW)) {
+			rc = scr_tlb_miss_trap_handler(regs);
+			if (rc) {
+				rc = sbi_trap_redirect(regs, trap);
+			}
+		} else {
+			rc = sbi_trap_redirect(regs, trap);
+		}
+		msg = "tlb miss handler failed";
+		break;
 	case CAUSE_ILLEGAL_INSTRUCTION:
 		rc  = sbi_illegal_insn_handler(tcntx);
 		msg = "illegal instruction handler failed";

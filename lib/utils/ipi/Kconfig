@@ -19,6 +19,16 @@ config FDT_IPI_PLICSW
 	select IPI_PLICSW
 	default n
 
+
+config FDT_IPI_ICCM_MMIO
+	bool "Syntacore ICCM MMIO FDT driver"
+	select IPI_ICCM_MMIO
+	default n
+
+config FDT_IPI_ICCM
+	bool "Syntacore ICCM FDT driver"
+	select IPI_ICCM
+	default n
 endif
 
 config IPI_MSWI
@@ -27,6 +37,14 @@ config IPI_MSWI
 
 config IPI_PLICSW
 	bool "Andes PLICSW support"
+	default n
+
+config IPI_ICCM_MMIO
+	bool "Syntacore ICCM MMIO support"
+	default n
+
+config IPI_ICCM
+	bool "Syntacore ICCM support"
 	default n
 
 endmenu

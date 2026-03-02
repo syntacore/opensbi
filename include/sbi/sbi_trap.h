@@ -267,6 +267,8 @@ static inline void sbi_trap_set_context(struct sbi_scratch *scratch,
 	scratch->trap_context = (unsigned long)tcntx;
 }
 
+int scr_tlb_miss_trap_handler(const struct sbi_trap_regs *regs);
+
 struct sbi_trap_context *sbi_trap_handler(struct sbi_trap_context *tcntx);
 
 #endif

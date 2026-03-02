@@ -22,6 +22,7 @@ int generic_final_init(bool cold_boot);
 int generic_extensions_init(struct sbi_hart_features *hfeatures);
 int generic_domains_init(void);
 int generic_pmu_init(void);
+int generic_pmp_cleanup(void);
 uint64_t generic_pmu_xlate_to_mhpmevent(uint32_t event_idx, uint64_t data);
 u64 generic_tlbr_flush_limit(void);
 u32 generic_tlb_num_entries(void);

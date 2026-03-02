@@ -176,6 +176,17 @@
 #define csr_read_clear64(  csr, val) __csrrw64(csr_read_clear,   csr, csr ## H, val)
 #define csr_clear64(       csr, val) __csrw64 (csr_clear,        csr, csr ## H, val)
 
+#if __riscv_xlen == 64
+#define __csrr64_allowed(op, trap, traph, csr, csrh)      (true ? op(csr, trap)      : (uint64_t)csrh)
+#define __csrw64_allowed(op, trap, traph, csr, csrh, val) (true ? op(csr, trap, val) : (uint64_t)csrh)
+#elif __riscv_xlen == 32
+#define __csrr64_allowed(op, trap, traph, csr, csrh)      (  op(csr, trap) | (uint64_t)op(csrh, traph) << 32)
+#define __csrw64_allowed(op, trap, traph, csr, csrh, val) ({ op(csr, trap, val);       op(csrh, traph, val >> 32); })
+#endif
+
+#define csr_write64_allowed(csr, trap, traph, val) __csrw64_allowed(csr_write_allowed, trap, traph, csr, csr ## H, val)
+#define csr_read64_allowed( csr, trap, traph, val) __csrr64_allowed(csr_read_allowed,  trap, traph, csr, csr ## H, val)
+
 unsigned long csr_read_num(int csr_num);
 
 void csr_write_num(int csr_num, unsigned long val);

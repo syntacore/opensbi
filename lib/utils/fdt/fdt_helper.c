@@ -10,6 +10,7 @@
 #include <sbi/riscv_asm.h>
 #include <sbi/sbi_console.h>
 #include <sbi/sbi_hartmask.h>
+#include <sbi/sbi_heap.h>
 #include <sbi/sbi_platform.h>
 #include <sbi/sbi_scratch.h>
 #include <sbi/sbi_hart.h>
@@ -482,6 +483,49 @@ int fdt_parse_isa_extensions(const void *fdt, unsigned int hartid,
 	for (i = 0; i < BITS_TO_LONGS(SBI_HART_EXT_MAX); i++)
 		extensions[i] |= hart_exts[i];
 	return 0;
+}
+
+int fdt_patch_isa_extensions(const void *fdt, const char* new_string_list,
+			  size_t len_newlist)
+{
+	int cpus_offset = fdt_path_offset(fdt, "/cpus");
+	if (cpus_offset < 0) {
+		return cpus_offset;
+	}
+
+	int cpu_offset, err, len_oldlist;
+	u32 hartid;
+	fdt_for_each_subnode(cpu_offset, fdt, cpus_offset) {
+		err = fdt_parse_hart_id(fdt, cpu_offset, &hartid);
+		if (err)
+			continue;
+
+		if (!fdt_node_is_enabled(fdt, cpu_offset))
+			continue;
+
+		const fdt32_t *val = fdt_getprop(fdt, cpu_offset, "riscv,isa-extensions", &len_oldlist);
+		if (!val) {
+			return SBI_ENOENT;
+		}
+		if (len_newlist > len_oldlist) {
+			return SBI_ENOMEM;
+		}
+		char* list_to_write = new_string_list;
+		if (len_newlist < len_oldlist) {
+			list_to_write = sbi_calloc(len_oldlist, sizeof(char));
+			sbi_memcpy(list_to_write, new_string_list,len_newlist);
+			len_newlist = len_oldlist;
+		}
+		int written = fdt_setprop_inplace(fdt, cpu_offset, "riscv,isa-extensions", list_to_write, len_newlist);
+		if (list_to_write != new_string_list) {
+			sbi_free(list_to_write);
+		}
+		if (written < 0) {
+			return written;
+		}
+	}
+
+	return SBI_OK;
 }
 
 static int fdt_parse_uart_node_common(const void *fdt, int nodeoffset,

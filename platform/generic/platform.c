@@ -29,6 +29,7 @@
 #include <sbi_utils/serial/fdt_serial.h>
 #include <sbi_utils/serial/semihosting.h>
 #include <sbi_utils/timer/fdt_timer.h>
+#include <sbi_utils/ud/ud_helper.h>
 
 /* List of platform override modules generated at compile time */
 extern const struct fdt_driver *const platform_override_modules[];
@@ -250,6 +251,16 @@ int generic_final_init(bool cold_boot)
 
 int generic_extensions_init(struct sbi_hart_features *hfeatures)
 {
+	/* Try to read isa extensions from Unified Discovery and update device tree */
+	if (init_unified_discovery() == SBI_OK) {
+		char* ext_string_list = NULL;
+		size_t len = 0;
+		int ret_code = unified_discovery_get_extensions_str(&ext_string_list, &len);
+		if (ret_code == SBI_OK) {
+			fdt_patch_isa_extensions(fdt_get_address(), ext_string_list, len);
+		}
+		sbi_free(ext_string_list);
+	}
 	/* Parse the ISA string from FDT and enable the listed extensions */
 	return fdt_parse_isa_extensions(fdt_get_address(), current_hartid(),
 					hfeatures->extensions);

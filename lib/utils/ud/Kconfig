@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: BSD-2-Clause
+
+menu "Unified Discovery support"
+
+config UNIFIED_DISCOVERY
+	bool "Unified discovery"
+	default y
+
+endmenu

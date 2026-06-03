@@ -1,0 +1,121 @@
+ASN_MODULE_SRCS=	\
+	./lib/utils/ud/generated/ScClockData.c	\
+	./lib/utils/ud/generated/HartClockData.c	\
+	./lib/utils/ud/generated/JEDEC-ID.c	\
+	./lib/utils/ud/generated/DiscoveryAdditonalData.c	\
+	./lib/utils/ud/generated/DiscoveryErrata.c	\
+	./lib/utils/ud/generated/RVVConfig.c	\
+	./lib/utils/ud/generated/DiscoveryData.c	\
+	./lib/utils/ud/generated/UnifiedDiscoveryMessage.c	\
+	./lib/utils/ud/generated/EXTERNAL.c
+
+ASN_MODULE_HDRS=	\
+	./lib/utils/ud/generated/ScClockData.h	\
+	./lib/utils/ud/generated/HartClockData.h	\
+	./lib/utils/ud/generated/JEDEC-ID.h	\
+	./lib/utils/ud/generated/DiscoveryAdditonalData.h	\
+	./lib/utils/ud/generated/DiscoveryErrata.h	\
+	./lib/utils/ud/generated/RVVConfig.h	\
+	./lib/utils/ud/generated/DiscoveryData.h	\
+	./lib/utils/ud/generated/UnifiedDiscoveryMessage.h	\
+	./lib/utils/ud/generated/EXTERNAL.h
+
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/ANY.h
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/ANY.c
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/OCTET_STRING.h
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/OPEN_TYPE.h
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/OPEN_TYPE.c
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/constr_CHOICE.h
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/GraphicString.h
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/GraphicString.c
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/INTEGER.h
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/INTEGER.c
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/NativeInteger.h
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/NativeInteger.c
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/OBJECT_IDENTIFIER.h
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/OBJECT_IDENTIFIER.c
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/asn_codecs_prim.h
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/ObjectDescriptor.h
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/ObjectDescriptor.c
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/UTF8String.h
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/UTF8String.c
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/asn_SEQUENCE_OF.h
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/asn_SEQUENCE_OF.c
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/asn_SET_OF.h
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/asn_SET_OF.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/constr_CHOICE.c
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/constr_SEQUENCE.h
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/constr_SEQUENCE.c
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/constr_SEQUENCE_OF.h
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/constr_SEQUENCE_OF.c
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/constr_SET_OF.h
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/constr_SET_OF.c
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/asn_application.h
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/asn_application.c
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/asn_ioc.h
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/asn_system.h
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/asn_codecs.h
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/asn_internal.h
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/asn_internal.c
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/asn_bit_data.h
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/asn_bit_data.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/OCTET_STRING.c
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/BIT_STRING.h
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/BIT_STRING.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/asn_codecs_prim.c
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/ber_tlv_length.h
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/ber_tlv_length.c
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/ber_tlv_tag.h
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/ber_tlv_tag.c
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/constr_TYPE.h
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/constr_TYPE.c
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/constraints.h
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/constraints.c
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/ber_decoder.h
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/der_encoder.h
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/ber_decoder.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/der_encoder.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/ANY_ber.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/INTEGER_ber.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/NativeInteger_ber.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/OCTET_STRING_ber.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/OPEN_TYPE_ber.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/asn_codecs_prim_ber.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/constr_CHOICE_ber.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/constr_SEQUENCE_OF_ber.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/constr_SEQUENCE_ber.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/constr_SET_OF_ber.c
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/per_decoder.h
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/per_encoder.h
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/per_support.h
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/per_opentype.h
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/per_decoder.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/per_encoder.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/per_support.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/per_opentype.c
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/uper_decoder.h
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/uper_encoder.h
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/uper_support.h
+ASN_MODULE_HDRS+=./lib/utils/ud/generated/uper_opentype.h
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/uper_decoder.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/uper_encoder.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/uper_support.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/uper_opentype.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/ANY_uper.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/BIT_STRING_uper.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/INTEGER_uper.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/NativeInteger_uper.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/OCTET_STRING_uper.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/OPEN_TYPE_uper.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/constr_CHOICE_uper.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/constr_SEQUENCE_OF_uper.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/constr_SEQUENCE_uper.c
+ASN_MODULE_SRCS+=./lib/utils/ud/generated/constr_SET_OF_uper.c
+
+ASN_MODULE_CFLAGS=-DASN_DISABLE_XER_SUPPORT -DASN_DISABLE_OER_SUPPORT -DASN_DISABLE_APER_SUPPORT -DASN_DISABLE_PRINT_SUPPORT -DASN_DISABLE_RFILL_SUPPORT -DASN_DISABLE_JER_SUPPORT -DASN_DISABLE_CBOR_SUPPORT 
+
+lib_LTLIBRARIES+=libasncodec.la
+libasncodec_la_SOURCES=$(ASN_MODULE_SRCS) $(ASN_MODULE_HDRS)
+libasncodec_la_CPPFLAGS=-I$(top_srcdir)/./lib/utils/ud/generated/
+libasncodec_la_CFLAGS=$(ASN_MODULE_CFLAGS)
+libasncodec_la_LDFLAGS=-lm

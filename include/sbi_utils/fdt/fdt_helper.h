@@ -57,6 +57,9 @@ int fdt_parse_timebase_frequency(const void *fdt, unsigned long *freq);
 int fdt_parse_isa_extensions(const void *fdt, unsigned int hartid,
 			     unsigned long *extensions);
 
+int fdt_patch_isa_extensions(const void *fdt, const char* new_string_list,
+				 size_t len_newlist);
+
 int fdt_parse_gaisler_uart_node(const void *fdt, int nodeoffset,
 				struct platform_uart_data *uart);
 

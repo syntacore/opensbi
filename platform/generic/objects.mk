@@ -9,7 +9,7 @@
 
 # Compiler flags
 platform-cppflags-y =
-platform-cflags-y =
+platform-cflags-y +=
 platform-asflags-y =
 platform-ldflags-y =
 

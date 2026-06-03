@@ -24,12 +24,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <libfdt.h>
 #include <sbi/riscv_io.h>
+#include <sbi/riscv_asm.h>
 #include <sbi_utils/timer/scr_mtimer.h>
+#include <sbi_utils/ud/ud_helper.h>
 #include <syntacore/scr_hwinfo.h>
 #include <syntacore/scr_fdt_helper.h>
 #include <syntacore/scr_generic.h>
 
+#include <ScClockData.h>
 
 typedef struct {
 	int (*get_build_id)(unsigned long *build_id);
@@ -309,6 +313,152 @@ static scr_hwinfo_provider scr_hwinfo_blob_provider = {
 };
 
 
+static const scr_hwinfo_interface scr_ud_blob_interface;
+static ScClockData_t* ud_blob_ptr = NULL;
+
+#define SC_UD_URL ("sc-ud-basic")
+
+static int scr_ud_blob_init(void *fdt)
+{
+	const int ud_ready = init_unified_discovery();
+	if (ud_ready != SBI_OK) {
+		return SCR_HWINFO_EMETHOD_DISABLED;
+	}
+
+	DiscoveryAdditonalData_t* sc_ud;
+
+	int sc_ud_found = get_unified_discovery_ext_by_url(&sc_ud, SC_UD_URL);
+	if (sc_ud_found != SBI_OK) {
+		return SCR_HWINFO_EMETHOD_DISABLED;
+	}
+	
+	asn_codec_ctx_t codec = {0};
+
+	asn_dec_rval_t sc_ud_rval = asn_decode(
+		&codec,
+		ATS_DER,
+		&asn_DEF_ScClockData,
+		(void*) &ud_blob_ptr,
+		sc_ud->payload.buf,
+		sc_ud->payload.size
+	);
+
+	if (sc_ud_rval.code != RC_OK) {
+		return SCR_HWINFO_EMETHOD_DISABLED;
+	}
+
+	if (ud_blob_ptr->version != 1) {
+		return SCR_HWINFO_EMETHOD_DISABLED;
+	}
+
+	return SCR_HWINFO_OK;
+}
+
+
+static int scr_ud_blob_get_build_id(unsigned long *build_id)
+{
+	if (!ud_blob_ptr) {
+		return SCR_HWINFO_EMETHOD_DISABLED;
+	}
+	if(ud_blob_ptr->buildId) {
+		*build_id = ud_blob_ptr->buildId;
+		return SCR_HWINFO_OK;
+	}
+
+	return SCR_HWINFO_ENO_VALUE;
+}
+
+static int scr_ud_blob_get_sys_clk(unsigned long *sys_clk)
+{
+	if (!ud_blob_ptr) {
+		return SCR_HWINFO_EMETHOD_DISABLED;
+	}
+	if(ud_blob_ptr->sysClk) {
+		*sys_clk = ud_blob_ptr->sysClk;
+		return SCR_HWINFO_OK;
+	}
+
+	return SCR_HWINFO_ENO_VALUE;
+}
+
+static int scr_ud_blob_get_mtimer_clk(unsigned long *mtimer_clk)
+{
+	if (!ud_blob_ptr) {
+		return SCR_HWINFO_EMETHOD_DISABLED;
+	}
+	int ret = SCR_HWINFO_ENO_VALUE;
+
+	if(scr_mtimer_get_clocksource() == SCR_CLKSRC_EXTERNAL && ud_blob_ptr->mtimerClk) {
+		*mtimer_clk = ud_blob_ptr->mtimerClk;
+		ret = SCR_HWINFO_OK;
+	}
+	else {
+		ret = scr_ud_blob_interface.get_sys_clk(mtimer_clk);
+	}
+
+	return ret;
+}
+
+static int scr_ud_blob_get_uart_clk(unsigned long *uart_clk)
+{
+	if (!ud_blob_ptr) {
+		return SCR_HWINFO_EMETHOD_DISABLED;
+	}
+	if(ud_blob_ptr->uartClk) {
+		*uart_clk = ud_blob_ptr->uartClk;
+		return SCR_HWINFO_OK;
+	}
+
+	return SCR_HWINFO_ENO_VALUE;
+}
+
+static int scr_ud_blob_get_harts_count(unsigned long *harts_count)
+{
+	if (!ud_blob_ptr) {
+		return SCR_HWINFO_EMETHOD_DISABLED;
+	}
+	if (ud_blob_ptr->harts.list.count) {
+		*harts_count = ud_blob_ptr->harts.list.count;
+		return SCR_HWINFO_OK;
+	}
+
+	return SCR_HWINFO_ENO_VALUE;
+}
+
+static int scr_ud_blob_get_hart_clk(unsigned long hartid, unsigned long *hart_clk)
+{
+	if (!ud_blob_ptr) {
+		return SCR_HWINFO_EMETHOD_DISABLED;
+	}
+	unsigned long harts_count;
+
+	if (scr_ud_blob_get_harts_count(&harts_count) != SCR_HWINFO_OK)
+		return SCR_HWINFO_ENO_VALUE;
+
+	for (unsigned i = 0; i < harts_count; i++) {
+		if (ud_blob_ptr->harts.list.array[i]->id == hartid) {
+			*hart_clk = ud_blob_ptr->harts.list.array[i]->clk;
+			return SCR_HWINFO_OK;
+		}
+	}
+
+	return SCR_HWINFO_ENO_VALUE;
+}
+
+static const scr_hwinfo_interface scr_ud_blob_interface = {
+	.get_build_id = scr_ud_blob_get_build_id,
+	.get_cls_clk = scr_ud_blob_get_sys_clk,
+	.get_hart_clk = scr_ud_blob_get_hart_clk,
+	.get_harts_count = scr_ud_blob_get_harts_count,
+	.get_mtimer_clk = scr_ud_blob_get_mtimer_clk,
+	.get_sys_clk = scr_ud_blob_get_sys_clk,
+	.get_uart_clk = scr_ud_blob_get_uart_clk
+};
+
+scr_hwinfo_provider ud_blob_provider = {
+	.init_method = scr_ud_blob_init,
+	.interface   = &scr_ud_blob_interface
+};
 
 /**
  * Common logic to get info from specific methods
@@ -322,7 +472,8 @@ static scr_hwinfo_provider scr_hwinfo_blob_provider = {
  */
 static scr_hwinfo_source existing_sources[] = {
 	{ .provider = &scr_hwinfo_mmio_provider, .online = 0 },
-	{ .provider = &scr_hwinfo_blob_provider, .online = 0 }
+	{ .provider = &scr_hwinfo_blob_provider, .online = 0 },
+	{ .provider = &ud_blob_provider, .online = 0 },
 };
 
 typedef int (*get_hwinfo_func)(const scr_hwinfo_interface *interface, void *data, unsigned long *hwinfo_val);
